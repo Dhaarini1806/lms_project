@@ -1,0 +1,147 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Shopping Cart - Tradersfy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0D0D12',
+                        cardBg: '#16161F',
+                        borderGray: '#242433',
+                        accentGreen: '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0D0D12; color: #E2E8F0; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0D0D12; }
+        ::-webkit-scrollbar-thumb { background: #242433; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+
+    <nav class="border-b border-borderGray bg-darkBg/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-emerald-500 to-teal-600 p-2 rounded-xl">
+                    <i class="fa-solid fa-chart-line text-white text-lg"></i>
+                </div>
+                <span class="text-xl font-bold text-white">Traders<span class="text-emerald-400">fy</span></span>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="/courses/" class="text-sm font-medium text-gray-400 hover:text-white transition">Back to Catalog</a>
+                {% if user.is_authenticated %}
+                    <span class="text-xs font-mono text-gray-400 bg-cardBg border border-borderGray px-2.5 py-1 rounded-md">
+                        <i class="fa-solid fa-user mr-1.5 text-emerald-400"></i>{{ user.username }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-10">
+        <h1 class="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+            <i class="fa-solid fa-shopping-cart text-emerald-400"></i> Review Your Cart
+        </h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 space-y-4">
+                {% for item in cart_items %}
+                <div class="bg-cardBg border border-borderGray rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-5 hover:border-borderGray/80 transition">
+                    <div class="flex items-center gap-5 w-full sm:w-auto">
+                        <div class="w-24 h-16 bg-darkBg rounded-xl flex items-center justify-center border border-borderGray flex-shrink-0 overflow-hidden">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="" class="w-full h-full object-cover">
+                            {% else %}
+                                <i class="fa-solid fa-graduation-cap text-gray-600 text-xl"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-white text-base line-clamp-1">{{ item.title }}</h3>
+                            <p class="text-xs text-gray-400 mt-1 flex items-center gap-2">
+                                <span><i class="fa-solid fa-clock text-gray-500 mr-1"></i> Full Access</span>
+                                <span>•</span>
+                                <span class="text-emerald-400 font-medium">Instant Activation</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-borderGray/50">
+                        <span class="text-lg font-bold text-white">₹{{ item.price }}</span>
+                        <a href="{% url 'remove_from_cart' item.id %}" class="text-gray-500 hover:text-rose-400 transition p-2 text-sm" title="Remove item from workspace">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="bg-cardBg border border-dashed border-borderGray rounded-2xl p-12 text-center space-y-4">
+                    <div class="w-16 h-16 bg-darkBg rounded-full flex items-center justify-center mx-auto text-gray-500">
+                        <i class="fa-solid fa-bag-shopping text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-md font-semibold text-white">Your cart is empty</h3>
+                        <p class="text-sm text-gray-400 mt-1">Explore our expert trading catalog to add premium toolkits.</p>
+                    </div>
+                    <a href="/courses/" class="inline-block bg-emerald-500 hover:bg-emerald-600 text-black font-semibold text-sm px-5 py-2.5 rounded-xl transition">
+                        Browse Courses
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="bg-cardBg border border-borderGray rounded-2xl p-6 space-y-6 sticky top-6 shadow-xl">
+                    <h2 class="text-md font-semibold text-white tracking-wide border-b border-borderGray pb-4">
+                        Order Summary
+                    </h2>
+
+                    <div class="space-y-3.5 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Subtotal</span>
+                            <span class="text-gray-200 font-medium">₹{{ subtotal }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Estimated GST (18%)</span>
+                            <span class="text-gray-200 font-medium">₹{{ gst_estimate }}</span>
+                        </div>
+                        <div class="border-t border-borderGray/50 my-2 pt-3 flex justify-between items-baseline">
+                            <span class="text-base font-medium text-white">Grand Total</span>
+                            <span class="text-2xl font-black text-emerald-400">₹{{ grand_total }}</span>
+                        </div>
+                    </div>
+
+                    {% if cart_items %}
+                        <form method="POST" action="{% url 'checkout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="w-full block text-center bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-bold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-500/10 hover:brightness-110 active:scale-[0.99] transition duration-150 cursor-pointer">
+                                Proceed to Checkout <i class="fa-solid fa-arrow-right ml-1.5"></i>
+                            </button>
+                        </form>
+                    {% else %}
+                        <button disabled class="w-full bg-borderGray text-gray-500 font-semibold text-sm py-3.5 px-4 rounded-xl cursor-not-allowed">
+                            Checkout Disabled
+                        </button>
+                    {% endif %}
+
+                    <div class="flex items-center justify-center gap-2 text-[11px] text-gray-500 pt-2">
+                        <i class="fa-solid fa-lock text-emerald-500/60"></i> Secure Payments powered by Razorpay
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

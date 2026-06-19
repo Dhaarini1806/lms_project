@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradersfy - My Account Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-[#0A0A0A] text-white font-sans min-h-screen">
+
+    <div class="max-w-3xl mx-auto px-6 py-16">
+        <div class="flex justify-between items-center mb-8 border-b border-gray-900 pb-4">
+            <div>
+                <h2 class="text-2xl font-black tracking-tight">Account Configuration Profile</h2>
+                <p class="text-xs text-gray-500 mt-1">Logged in as: <span class="text-[#00C5FF] font-mono">{{ request.user.username }}</span></p>
+                <p class="text-xs text-gray-500">Enrolled Courses: {{ enrolled_courses }}</p>
+            </div>
+            <a href="{% url 'home' %}" class="bg-[#111111] border border-gray-800 text-gray-400 px-4 py-2 rounded-xl text-xs hover:text-white transition">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Return Home
+            </a>
+        </div>
+
+        <form method="POST" class="bg-[#111111] p-8 rounded-2xl border border-gray-900 space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-1.5">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Full Name</label>
+                    <input type="text" name="full_name" value="{{ profile.full_name|default:'' }}" placeholder="Your full name" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Alternate Email</label>
+                    <input type="email" name="alt_email" value="{{ profile.alt_email|default:'' }}" placeholder="Alternate email address" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Employee ID</label>
+                    <input type="text" name="employee_id" value="{{ profile.employee_id|default:'' }}" placeholder="Employee ID (if applicable)" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">User Type</label>
+                    <select name="user_type" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
+                        <option value="student" {% if profile.user_type == "student" %}selected{% endif %}>Student</option>
+                        <option value="professional" {% if profile.user_type == "professional" %}selected{% endif %}>Professional</option>
+                        <option value="instructor" {% if profile.user_type == "instructor" %}selected{% endif %}>Instructor</option>
+                        <option value="other" {% if profile.user_type == "other" %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Phone Number</label>
+                    <input type="text" name="phone_number" value="{{ profile.phone_number|default:'' }}" placeholder="+91XXXXXXXXXX" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">WhatsApp Contact Number</label>
+                    <input type="text" name="whatsapp_number" value="{{ profile.whatsapp_number|default:'' }}" placeholder="e.g. +917200843784" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">City / Settlement Area</label>
+                    <input type="text" name="city" value="{{ profile.city }}" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
+                </div>
+                    <option value="Maharashtra" {% if profile.state == "Maharashtra" %}selected{% endif %}>Maharashtra</option>
+                    <option value="Delhi" {% if profile.state == "Delhi" %}selected{% endif %}>Delhi</option>
+                </select>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Street House Address</label>
+                <textarea name="street_address" rows="4" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">{{ profile.street_address }}</textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-[#00C5FF] text-black font-black py-4 rounded-xl text-xs tracking-wider uppercase shadow-lg shadow-[#00C5FF]/10 hover:bg-[#00A3D4] transition">
+                Save and Sync Profile Records <i class="fa-solid fa-circle-check ml-1"></i>
+            </button>
+        </form>
+    </div>
+
+</body>
+</html>

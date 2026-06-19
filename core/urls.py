@@ -1,0 +1,46 @@
+from django.urls import path
+from django.contrib import admin
+from .views import (
+    home_view,
+    login_view,
+    front_end_logout,
+    send_otp,
+    verify_otp,
+    course_catalog,
+    course_detail,
+    lesson_detail,
+    add_to_cart,
+    view_cart,
+    checkout_view,
+    remove_from_cart,
+    toggle_wishlist,
+    verify_payment,
+    order_success,
+    admin_dashboard,
+    admin_add_course,
+    update_lesson_order,
+    profile_view,
+)
+
+urlpatterns = [
+    path('', home_view, name='home'),
+    path('login/', login_view, name='login'),
+    path('logout/', front_end_logout, name='logout'),
+    path('admin/', admin.site.urls),
+    # Custom LMS admin routes (use a distinct prefix to avoid clash with Django admin)
+    path('master/dashboard/', admin_dashboard, name='admin_dashboard'),
+    path('master/add-course/', admin_add_course, name='admin_add_course'),
+    path('master/update-lesson-order/', update_lesson_order, name='update_lesson_order'),
+    path('send-otp/', send_otp, name='send_otp'),
+    path('verify-otp/', verify_otp, name='verify_otp'),
+    path('courses/', course_catalog, name='course_catalog'),
+    path('profile/', profile_view, name='profile'),
+    path('courses/<slug:course_slug>/', course_detail, name='course_detail'),
+    path('courses/<slug:course_slug>/lessons/<slug:lesson_slug>/', lesson_detail, name='lesson_detail'),
+    path('cart/add/<int:course_id>/', add_to_cart, name='add_to_cart'),
+    path('cart/', view_cart, name='view_cart'),
+    path('cart/remove/<int:course_id>/', remove_from_cart, name='remove_from_cart'),
+    path('wishlist/toggle/<int:course_id>/', toggle_wishlist, name='toggle_wishlist'),
+    path('checkout/', checkout_view, name='checkout'),
+    path('checkout/verify-payment/', verify_payment, name='verify_payment'),
+]

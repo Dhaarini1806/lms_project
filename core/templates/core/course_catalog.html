@@ -1,0 +1,194 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradersfy - Course Catalog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0D0D12',
+                        cardBg: '#16161F',
+                        borderGray: '#242433',
+                        accentGreen: '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0D0D12;
+            color: #E2E8F0;
+        }
+        /* Custom scrollbar for a seamless dark-mode experience */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0D0D12; }
+        ::-webkit-scrollbar-thumb { background: #242433; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #323247; }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+
+    <nav class="sticky top-0 z-50 border-b border-borderGray bg-darkBg/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-emerald-500 to-teal-600 p-2 rounded-xl shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-chart-line text-white text-lg"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-white">Traders<span class="text-emerald-400">fy</span></span>
+            </div>
+
+            <div class="hidden md:flex items-center gap-8">
+                <a href="/" class="text-sm font-medium text-gray-400 hover:text-white transition">Dashboard</a>
+                <a href="/courses/" class="text-sm font-medium text-emerald-400 border-b-2 border-emerald-400 pb-1">Catalog</a>
+                <a href="#" class="text-sm font-medium text-gray-400 hover:text-white transition">Community</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                {% if user.is_authenticated %}
+                    <span class="inline-flex items-center gap-1.5 bg-[#1B1B26] border border-borderGray text-gray-300 px-3 py-1.5 rounded-lg text-xs font-mono">
+                        <i class="fa-solid fa-circle text-emerald-500 text-[8px] animate-pulse"></i> Active
+                    </span>
+                    <a href="{% url 'logout' %}" class="text-sm font-medium text-gray-400 hover:text-rose-400 border border-borderGray hover:border-rose-500/30 px-4 py-2 rounded-lg transition duration-200">
+                        <i class="fa-solid fa-sign-out-alt mr-1.5"></i>Logout
+                    </a>
+                {% else %}
+                    <a href="/login/" class="text-sm font-medium text-emerald-400 hover:text-emerald-300 transition px-4 py-2">Sign In</a>
+                    <a href="/register/" class="text-sm font-medium bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-4 py-2 rounded-lg transition duration-200">Get Started</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <aside class="lg:col-span-1 space-y-6 lg:sticky lg:top-24 h-fit">
+            <div class="bg-cardBg border border-borderGray rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-borderGray">
+                    <h2 class="text-md font-semibold text-white tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-emerald-400 text-sm"></i> Filters
+                    </h2>
+                    <a href="." class="text-xs text-gray-500 hover:text-emerald-400 transition">Clear All</a>
+                </div>
+
+                <form method="GET" action="" class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Course Strategy</label>
+                        <select name="category" class="w-full bg-darkBg border border-borderGray rounded-xl px-3 py-2.5 text-sm text-gray-300 focus:outline-none focus:border-emerald-500 transition">
+                            <option value="">All Categories</option>
+                            <option value="technical">Technical Analysis</option>
+                            <option value="options">Options Trading</option>
+                            <option value="crypto">Crypto Assets</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Language</label>
+                        <div class="space-y-2.5">
+                            {% for lang in "Tamil,English,Hindi,Kannada"|split_string:"," %}
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <div class="relative flex items-center">
+                                    <input type="checkbox" name="language" value="{{ lang }}" class="peer appearance-none w-4 h-4 rounded border border-borderGray bg-darkBg checked:bg-emerald-500 checked:border-emerald-500 transition cursor-pointer">
+                                    <i class="fa-solid fa-check absolute text-[10px] text-black font-bold scale-0 peer-checked:scale-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition pointer-events-none"></i>
+                                </div>
+                                <span class="text-sm text-gray-400 group-hover:text-gray-200 transition">{{ lang }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full mt-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-semibold text-sm py-2.5 px-4 rounded-xl shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20 hover:brightness-110 active:scale-[0.99] transition duration-150">
+                        Apply Configuration
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <main class="lg:col-span-3 space-y-6">
+            <div class="flex items-center justify-between pb-2">
+                <div>
+                    <h1 class="text-2xl font-bold text-white tracking-tight">Explore Programs</h1>
+                    <p class="text-sm text-gray-400 mt-1">Professional financial instruction curated by industry veterans.</p>
+                </div>
+                <span class="text-xs font-mono text-gray-500 bg-cardBg border border-borderGray px-3 py-1.5 rounded-lg">
+                    Total: {{ courses|length|default:"0" }} Courses
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for course in courses %}
+                <div class="bg-cardBg border border-borderGray rounded-2xl overflow-hidden hover:border-emerald-500/30 shadow-xl group transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="relative aspect-video w-full bg-neutral-900 overflow-hidden">
+                            {% if course.image %}
+                                <img src="{{ course.image.url }}" alt="{{ course.title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            {% else %}
+                                <div class="w-full h-full flex flex-col items-center justify-center text-gray-600 gap-2">
+                                    <i class="fa-solid fa-graduation-cap text-3xl"></i>
+                                    <span class="text-xs">No preview available</span>
+                                </div>
+                            {% endif %}
+                            <span class="absolute top-3 left-3 bg-darkBg/80 backdrop-blur-md text-emerald-400 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-borderGray">
+                                {{ course.level|default:"Premium" }}
+                            </span>
+                        </div>
+
+                        <div class="p-5 space-y-3">
+                            <h3 class="text-lg font-semibold text-white group-hover:text-emerald-400 transition line-clamp-1">
+                                {{ course.title }}
+                            </h3>
+                            <p class="text-sm text-gray-400 line-clamp-2 leading-relaxed">
+                                {{ course.description|default:"No course syllabus outline available at this time." }}
+                            </p>
+
+                            <div class="flex flex-wrap gap-2 pt-2">
+                                {% if course.languages %}
+                                    {% for language in course.languages|split_string:"," %}
+                                        <span class="bg-darkBg border border-borderGray text-gray-400 text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                                            <i class="fa-solid fa-language text-[10px] text-gray-500"></i> {{ language }}
+                                        </span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="bg-darkBg border border-borderGray text-gray-400 text-xs px-2.5 py-1 rounded-lg">
+                                        <i class="fa-solid fa-globe text-[10px] mr-1"></i> English
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-5 pb-5 pt-3 border-t border-borderGray/50 flex items-center justify-between bg-darkBg/20">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] uppercase text-gray-500 tracking-wider">Tuition Fees</span>
+                            <span class="text-lg font-bold text-white">
+                                {% if course.price %}${{ course.price }}{% else %}Free{% endif %}
+                            </span>
+                        </div>
+                        <a href="{% if course.id %}/courses/{{ course.id }}/{% else %}#{% endif %}" class="bg-[#1C1C28] border border-borderGray text-sm font-semibold text-white hover:bg-emerald-500 hover:text-black hover:border-emerald-500 px-4 py-2 rounded-xl transition duration-200 shadow-md">
+                            View Course <i class="fa-solid fa-arrow-right ml-1.5 text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-full bg-cardBg border border-dashed border-borderGray rounded-2xl p-12 text-center space-y-4">
+                    <div class="w-16 h-16 bg-[#1A1A26] rounded-full flex items-center justify-center mx-auto text-gray-500">
+                        <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="text-md font-semibold text-white">No courses match criteria</h3>
+                        <p class="text-sm text-gray-400">Try modifying your filter parameters or checking alternative query parameters.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

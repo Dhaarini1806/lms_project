@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradersfy - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-[#0A0A0A] text-white font-sans min-h-screen selection:bg-[#00C5FF] selection:text-black">
+
+    {% if user.is_authenticated %}
+    <!-- Personalized welcome banner for logged-in users -->
+    <div class="bg-gradient-to-r from-[#00C5FF] to-[#0072FF] text-black font-bold px-6 py-4 text-center text-sm tracking-wide shadow-lg flex items-center justify-center space-x-2 animate-fade-in">
+        <i class="fa-solid fa-user-circle"></i>
+        <span>Welcome back, {{ user.username }}! You have access to your dashboard and quick links.</span>
+    </div>
+    <section class="max-w-7xl mx-auto px-6 md:px-12 pt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Quick‑access cards -->
+        <a href="{% url 'admin_dashboard' %}" class="bg-[#161616] p-6 rounded-xl border border-gray-800 hover:border-[#00C5FF]/50 transition flex flex-col items-center text-center">
+            <i class="fa-solid fa-chart-line text-2xl text-[#00C5FF] mb-2"></i>
+            <span class="font-semibold">Admin Dashboard</span>
+        </a>
+        <a href="{% url 'course_catalog' %}" class="bg-[#161616] p-6 rounded-xl border border-gray-800 hover:border-[#00C5FF]/50 transition flex flex-col items-center text-center">
+            <i class="fa-solid fa-book-open text-2xl text-[#00C5FF] mb-2"></i>
+            <span class="font-semibold">Browse Courses</span>
+        </a>
+        <a href="{% url 'profile' %}" class="bg-[#161616] p-6 rounded-xl border border-gray-800 hover:border-[#00C5FF]/50 transition flex flex-col items-center text-center">
+            <i class="fa-solid fa-user text-2xl text-[#00C5FF] mb-2"></i>
+            <span class="font-semibold">My Profile</span>
+        </a>
+    </section>
+{% else %}
+    {% if welcome_banner %}
+    <div class="bg-gradient-to-r from-[#00C5FF] to-[#0072FF] text-black font-bold px-6 py-3 text-center text-sm tracking-wide shadow-lg flex items-center justify-center space-x-2 animate-fade-in">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span>Welcome to Tradersfy! Your account was initialized successfully. Complete your student profile setup below.</span>
+    </div>
+    {% endif %}
+    <header class="w-full flex items-center justify-between px-6 md:px-16 py-5 bg-[#111111]/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-900">
+        <div class="flex items-center space-x-12">
+            <div class="text-xl font-bold tracking-wider text-[#00C5FF] flex items-center">
+                <span class="border-2 border-[#00C5FF] px-2 py-0.5 rounded mr-2 text-xs">T</span> Tradersfy
+            </div>
+            <nav class="hidden lg:flex space-x-8 text-gray-400 text-sm font-medium">
+                <a href="/courses/" class="hover:text-white transition">Courses</a>
+                <a href="#testimonials" class="hover:text-white transition">Testimonials</a>
+                <a href="#values" class="hover:text-white transition">Core Values</a>
+            </nav>
+        </div>
+        <div class="flex items-center space-x-6">
+            {% if user.is_authenticated %}
+                <span class="text-xs bg-[#222222] border border-gray-800 text-gray-400 px-3 py-1.5 rounded-lg font-mono"><i class="fa-solid fa-circle text-green-500 mr-1.5 text-[9px]"></i>Active</span>
+                <a href="{% url 'logout' %}" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
+            {% else %}
+                <a href="/login/" class="bg-[#00C5FF] text-black font-semibold px-5 py-2 rounded-lg text-sm hover:bg-[#00A3D4] transition">Sign In</a>
+            {% endif %}
+        </div>
+    </header>
+{% endif %}
+
+    <div class="bg-gradient-to-r from-[#00C5FF] to-[#0072FF] text-black font-bold px-6 py-3 text-center text-sm tracking-wide shadow-lg flex items-center justify-center space-x-2 animate-fade-in">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span>Welcome to Tradersfy! Your account was initialized successfully. Complete your student profile setup below.</span>
+    </div>
+    {% endif %}
+
+    <header class="w-full flex items-center justify-between px-6 md:px-16 py-5 bg-[#111111]/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-900">
+        <div class="flex items-center space-x-12">
+            <div class="text-xl font-bold tracking-wider text-[#00C5FF] flex items-center">
+                <span class="border-2 border-[#00C5FF] px-2 py-0.5 rounded mr-2 text-xs">T</span> Tradersfy
+            </div>
+            <nav class="hidden lg:flex space-x-8 text-gray-400 text-sm font-medium">
+                <a href="/courses/" class="hover:text-white transition">Courses</a>
+                <a href="#testimonials" class="hover:text-white transition">Testimonials</a>
+                <a href="#values" class="hover:text-white transition">Core Values</a>
+            </nav>
+        </div>
+        <div class="flex items-center space-x-6">
+            {% if user.is_authenticated %}
+                <span class="text-xs bg-[#222222] border border-gray-800 text-gray-400 px-3 py-1.5 rounded-lg font-mono">
+                    <i class="fa-solid fa-circle text-green-500 mr-1.5 text-[9px]"></i>Active
+                </span>
+                <a href="{% url 'logout' %}" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
+            {% else %}
+                <a href="/login/" class="bg-[#00C5FF] text-black font-semibold px-5 py-2 rounded-lg text-sm hover:bg-[#00A3D4] transition">Sign In</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <section class="max-w-7xl mx-auto px-6 md:px-12 pt-12 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7 space-y-6">
+            <span class="inline-flex items-center bg-[#161616] border border-gray-800 text-gray-400 px-3 py-1 rounded-full text-xs font-medium">
+                <i class="fa-solid fa-graduation-cap text-[#00C5FF] mr-2"></i> Course/Membership Template
+            </span>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+                Unlock Your Potential.<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00C5FF] to-teal-400">Expand Your Skills.</span>
+            </h1>
+            <p class="text-gray-400 text-base md:text-lg max-w-xl leading-relaxed">
+                Create Beautiful Membership Sites to Sell your Courses or any other products using the Custom Template designed seamlessly for instant learning interactions.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                <a href="/courses/" class="inline-flex items-center justify-center bg-[#00C5FF] text-black font-bold px-6 py-3.5 rounded-xl hover:bg-[#00A3D4] transition shadow-lg shadow-[#00C5FF]/10 text-sm">
+                    Explore Our Courses <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="lg:col-span-5 grid grid-cols-2 gap-4">
+            <img class="rounded-2xl h-48 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" alt="Workspace">
+            <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800 -mt-10" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80" alt="Students">
+            <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" alt="Collab">
+            <img class="rounded-2xl h-48 w-full object-cover shadow-2xl border border-gray-800 -mt-10" src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80" alt="Screen">
+        </div>
+    </section>
+
+    <section id="courses" class="bg-[#111111] py-24 border-y border-gray-900">
+        <div class="max-w-7xl mx-auto px-6 md:px-12">
+            <div class="text-center space-y-2 mb-16">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Featured Courses</h2>
+                <p class="text-gray-500 max-w-md mx-auto text-sm">Accelerate your baseline knowledge across media and logic paths</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for course in featured_courses %}
+                <div class="bg-[#161616] border border-gray-800/80 rounded-2xl overflow-hidden group hover:border-[#00C5FF]/50 transition duration-300 flex flex-col justify-between shadow-xl">
+                    <div>
+                        <div class="relative overflow-hidden h-48 bg-gray-900">
+                            {% if course.thumbnail %}
+                                <img class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500" src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+                            {% else %}
+                                <img class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500" src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=400&q=80" alt="Fallback Cover">
+                            {% endif %}
+                            <span class="absolute top-4 left-4 bg-black/70 backdrop-blur-md px-2.5 py-1 text-[10px] uppercase tracking-wider font-bold rounded-md text-gray-300">
+                                {{ course.category|default:"Trading Engine" }}
+                            </span>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <h3 class="text-lg font-bold group-hover:text-[#00C5FF] transition line-clamp-1">{{ course.title }}</h3>
+                        </div>
+                    </div>
+                    <div class="px-6 pb-6 pt-2 border-t border-gray-900 flex items-center justify-between text-xs text-gray-500">
+                        <div class="flex items-center space-x-3">
+                            <span><i class="fa-regular fa-clock mr-1 text-[#00C5FF]"></i> {{ course.duration|default:"Full Access" }}</span>
+                        </div>
+                        <a href="{% url 'course_detail' course.slug %}" class="bg-[#222222] hover:bg-[#00C5FF] text-gray-300 hover:text-black font-semibold px-3 py-1.5 rounded-md transition text-[11px]">
+                            View Course
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-full text-center py-12 text-gray-500 text-sm">
+                    No featured tracks initialized yet.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <footer class="w-full text-center py-8 text-gray-700 text-xs border-t border-gray-950 bg-[#0F0F0F]">
+        &copy; 2026 Tradersfy Global Academy Systems. All Rights Reserved.
+    </footer>
+
+</body>
+</html>

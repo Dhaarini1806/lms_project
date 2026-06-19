@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Complete - Tradersfy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-[#0A0A0A] text-white font-sans min-h-screen flex items-center justify-center p-6">
+
+    <div class="max-w-md w-full bg-[#111111] border border-gray-900 rounded-3xl p-8 text-center space-y-6 shadow-2xl">
+        <div class="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <div class="space-y-1">
+            <h2 class="text-xl font-bold tracking-tight">Payment Complete!</h2>
+            <p class="text-xs text-gray-500">Your trading training track has been officially unlocked.</p>
+        </div>
+
+        <div class="bg-[#161616] p-4 rounded-2xl border border-gray-900 text-left text-xs space-y-2.5">
+            <div class="flex justify-between text-gray-500"><span>Invoice Reference:</span><span class="text-gray-300 font-mono font-bold">{{ order.order_id }}</span></div>
+            <div class="flex justify-between text-gray-500"><span>Payment Channel:</span><span class="text-gray-300">{{ order.payment_method }}</span></div>
+            <div class="flex justify-between text-gray-500"><span>Tax Rate Applied:</span><span class="text-gray-300">18% Integrated GST</span></div>
+            <div class="flex justify-between border-t border-gray-800/80 pt-2.5 font-bold text-gray-400">
+                <span class="text-white">Amount Settled:</span>
+                <span class="text-[#00C5FF]">₹{{ order.total }}</span>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <a href="{% url 'course_catalog' %}" class="block w-full bg-[#1c1c1c] border border-gray-800 text-gray-300 hover:text-white hover:bg-black font-medium text-xs py-3 rounded-xl transition">
+                Go to Workspace Dashboards
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

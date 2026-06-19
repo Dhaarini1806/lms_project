@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | Razorpay Gateway</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #121212; color: #e0e0e0; padding: 40px 20px; }
+        .checkout-container { max-width: 600px; margin: 0 auto; background: #1e1e1e; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        h2 { border-bottom: 1px solid #333; padding-bottom: 15px; margin-top: 0; color: #fff; }
+        .flex-row { display: flex; justify-content: space-between; margin: 12px 0; font-size: 15px; }
+        .grand-total { font-size: 18px; font-weight: bold; color: #2ecc71; border-top: 1px dashed #444; padding-top: 12px; margin-top: 15px; }
+        .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+        label { margin-bottom: 6px; font-size: 13px; color: #aaa; }
+        input { padding: 10px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 14px; }
+        input:focus { border-color: #3498db; outline: none; }
+        .pay-btn { background: #3498db; color: white; border: none; padding: 14px; width: 100%; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 20px; transition: background 0.2s; }
+        .pay-btn:hover { background: #2980b9; }
+        .mock-badge { background: rgba(230, 126, 34, 0.2); color: #e67e22; padding: 10px; border-radius: 6px; font-size: 13px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(230,126,34,0.3); }
+    </style>
+</head>
+<body>
+
+<div class="checkout-container">
+    <h2>Secure Gateway Order Checkout</h2>
+    
+    {% if razorpay_order_id %}
+        <div class="mock-badge">
+            ⚡ <strong>Razorpay Sandbox Mode Active</strong><br>
+            Order ID Generated: <code>{{ razorpay_order_id }}</code>
+        </div>
+
+        <div class="flex-row"><span>Base Items Subtotal:</span> <span>₹{{ subtotal }}</span></div>
+        <div class="flex-row"><span>GST Estimate (18%):</span> <span>₹{{ gst_estimate }}</span></div>
+        <div class="flex-row grand-total"><span>Grand Payable Total:</span> <span>₹{{ grand_total }}</span></div>
+
+        <button id="rzp-mock-payment-button" class="pay-btn">Simulate Payment (₹{{ grand_total }})</button>
+
+        <script>
+            document.getElementById('rzp-mock-payment-button').onclick = function(e) {
+                e.preventDefault();
+                this.innerText = "Processing Transaction...";
+                this.disabled = true;
+
+                // Simulate payment success webhook data passing downstream
+                fetch("{% url 'verify_payment' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        razorpay_payment_id: "pay_mock_id_" + Math.floor(Math.random() * 899999 + 100000),
+                        razorpay_order_id: "{{ razorpay_order_id }}",
+                        razorpay_signature: "mock_signature_verified_valid_pass",
+                        internal_order_id: "{{ order.id }}"
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        alert("Payment handling rejected: " + data.error);
+                        window.location.reload();
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Network processing fault.");
+                });
+            };
+        </script>
+    {% else %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>WhatsApp Contact Number</label>
+                <input type="text" name="whatsapp_number" value="{{ profile.whatsapp_number|default:'' }}" required placeholder="+91 XXXXX XXXXX">
+            </div>
+            <div class="form-group">
+                <label>State / Union Territory</label>
+                <input type="text" name="state" value="{{ profile.state|default:'' }}" required placeholder="e.g. Maharashtra">
+            </div>
+            <div class="form-group">
+                <label>City</label>
+                <input type="text" name="city" value="{{ profile.city|default:'' }}" required placeholder="e.g. Mumbai">
+            </div>
+            <div class="form-group">
+                <label>Street Address</label>
+                <input type="text" name="street_address" value="{{ profile.street_address|default:'' }}" required placeholder="Building, Street Name, Locality">
+            </div>
+            <div class="form-group">
+                <label>Optional Business GSTIN</label>
+                <input type="text" name="gst_number" placeholder="22AAAAA1111A1Z1">
+            </div>
+
+            <button type="submit" class="pay-btn">Generate Order Invoice</button>
+        </form>
+    {% endif %}
+</div>
+
+</body>
+</html>
