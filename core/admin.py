@@ -8,10 +8,11 @@ class ProfileAdmin(admin.ModelAdmin):
 class LessonInline(admin.TabularInline):
     model = Lesson
     extra = 1
+    fields = ("title", "video_file", "video_url", "order", "is_locked")
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('title', 'language', 'level', 'price', 'rating')
+    list_display = ("title", "language", "level", "price", "rating", "expiry_duration_days")
     prepopulated_fields = {'slug': ('title',)}
     inlines = [LessonInline]
 

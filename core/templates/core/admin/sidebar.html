@@ -1,0 +1,40 @@
+<aside class="w-64 glass-sidebar p-6 flex flex-col justify-between">
+    <div>
+        <div class="flex items-center gap-3 mb-10">
+            <img src="{% static 'images/logo.png' %}" alt="Tradersfy Logo" class="w-8 h-8">
+            <span class="text-xl font-bold text-white">Tradersfy</span>
+        </div>
+        <nav class="space-y-2">
+            <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{% url 'admin_courses' %}" class="sidebar-link {% if 'course' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Courses</span>
+            </a>
+            <a href="{% url 'admin_users' %}" class="sidebar-link {% if 'user' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fa-solid fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="{% url 'admin_transactions' %}" class="sidebar-link {% if 'transaction' in request.resolver_match.url_name %}active{% endif %}>
+                <i class="fa-solid fa-receipt"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="{% url 'admin_analytics' %}" class="sidebar-link {% if 'analytics' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Analytics</span>
+            </a>
+        </nav>
+    </div>
+    <div class="space-y-2">
+        <a href="{% url 'home' %}" class="sidebar-link">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back to Site</span>
+        </a>
+        <a href="{% url 'logout' %}" class="sidebar-link">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</aside>

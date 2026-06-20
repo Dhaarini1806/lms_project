@@ -90,6 +90,11 @@ class Course(models.Model):
     is_published = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
+    expiry_duration_days = models.PositiveIntegerField(default=365, help_text="Duration in days for course access after enrollment")
+    
+    # Security Settings
+    prevent_screenshots = models.BooleanField(default=True, help_text="Attempt to block screenshots and screen recording")
+    restrict_downloads = models.BooleanField(default=True, help_text="Disable right-click and common download methods")
 
     class Meta:
         verbose_name_plural = "Courses"
@@ -114,9 +119,18 @@ class Lesson(models.Model):
     section_name = models.CharField(max_length=255, default="Introduction")
     title = models.CharField(max_length=255)
     slug = models.SlugField(default="lesson-slug")
-    video_url = models.URLField(max_length=500, help_text="Stream source URI")
+    video_file = models.FileField(upload_to='protected_videos/', blank=True, null=True, help_text="Upload video for secure streaming")
+    video_url = models.URLField(max_length=500, blank=True, null=True, help_text="Fallback stream source URI")
+    thumbnail = models.ImageField(upload_to='lesson_thumbnails/', blank=True, null=True)
     is_preview = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
+    is_locked = models.BooleanField(default=False, help_text="Whether this lesson is locked until previous lessons are completed")
+    
+    # Lesson Content Types
+    lesson_file = models.FileField(upload_to='lesson_files/', blank=True, null=True, help_text="Optional downloadable file for this lesson")
+    question_text = models.TextField(blank=True, null=True, help_text="If present, student must answer this to complete the lesson")
+    correct_answer = models.CharField(max_length=255, blank=True, null=True, help_text="Required answer if question_text is provided")
+    
     created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
@@ -134,6 +148,7 @@ class CourseAccess(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='unlocked_courses')
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     unlocked_at = models.DateTimeField(auto_now_add=True)
+    enrollment_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'course')
@@ -277,3 +292,21 @@ class LoginHistory(models.Model):
 
     def __str__(self):
         return f"{self.user.username} logged in at {self.login_at}"
+
+# ==========================================
+# 8. MARKETING & SOCIAL PROOF
+# ==========================================
+class Testimonial(models.Model):
+    name = models.CharField(max_length=255)
+    role = models.CharField(max_length=255, help_text="e.g., Student, Professional, Trader")
+    content = models.TextField()
+    image = models.ImageField(upload_to='testimonials/', blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Testimonials"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Testimonial by {self.name}"

@@ -1,68 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New User - Tradersfy Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { background-color: #0A0A0A; color: #E0E0E0; font-family: 'Inter', sans-serif; }
-        .glass-card { background: rgba(22, 22, 22, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 193, 7, 0.1); border-radius: 16px; }
-        .input-field { background: #111; border: 1px solid #222; border-radius: 8px; padding: 10px; width: 100%; color: white; }
-        .input-field:focus { border-color: #ffc107; outline: none; }
-        .btn-amber { background: #ffc107; color: #000; font-weight: 700; padding: 12px 24px; border-radius: 12px; transition: all 0.3s; }
-        .btn-amber:hover { background: #ffb300; transform: scale(1.02); }
-    </style>
-</head>
-<body class="p-10">
-    <div class="max-w-4xl mx-auto">
-        <div class="flex items-center justify-between mb-8">
-            <h1 class="text-3xl font-bold">Add New User</h1>
-            <a href="{% url 'admin_users' %}" class="text-gray-400 hover:text-white"><i class="fa-solid fa-arrow-left mr-2"></i> Back to Users</a>
-        </div>
+{% extends 'core/admin/admin_base.html' %}
+{% load static %}
 
-        <div class="glass-card p-8">
-            <form method="POST">
-                {% csrf_token %}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <h3 class="text-amber-400 font-bold mb-4">Account Information</h3>
-                        <div class="space-y-4">
-                            {% for field in user_form %}
-                            <div>
-                                <label class="block text-sm text-gray-400 mb-1">{{ field.label }}</label>
-                                {{ field }}
-                                {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>{% endif %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="text-amber-400 font-bold mb-4">Profile Details</h3>
-                        <div class="space-y-4">
-                            {% for field in profile_form %}
-                            <div>
-                                <label class="block text-sm text-gray-400 mb-1">{{ field.label }}</label>
-                                {{ field }}
-                                {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>{% endif %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-8 flex justify-end">
-                    <button type="submit" class="btn-amber">Create User</button>
-                </div>
-            </form>
-        </div>
+{% block title %}Add New User - Tradersfy Admin{% endblock %}
+
+{% block admin_content %}
+<div class="max-w-4xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-black text-white">Add New User</h1>
+        <a href="{% url 'admin_users' %}" class="text-gray-400 hover:text-white"><i class="fa-solid fa-arrow-left mr-2"></i> Back to Users</a>
     </div>
 
-    <script>
-        // Apply tailwind classes to django form fields
-        document.querySelectorAll('input, select, textarea').forEach(el => {
-            el.classList.add('input-field');
-        });
-    </script>
-</body>
-</html>
+    <div class="glass p-8 rounded-2xl">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-amber-400 font-bold mb-4">Account Information</h3>
+                    <div class="space-y-4">
+                        {% for field in user_form %}
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>{% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-amber-400 font-bold mb-4">Profile Details</h3>
+                    <div class="space-y-4">
+                        {% for field in profile_form %}
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>{% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 flex justify-end">
+                <button type="submit" class="btn-primary">Create User</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+        el.classList.add('w-full', 'bg-white/5', 'border', 'border-white/10', 'rounded-xl', 'px-4', 'py-3', 'text-sm', 'text-white', 'focus:border-amber-400', 'outline-none', 'transition');
+    });
+</script>
+{% endblock %}

@@ -13,7 +13,7 @@ from django.contrib.auth import get_user_model, login as django_login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import Profile, Course, Lesson, CourseAccess, Order, OrderItem, Certificate, OTPSession
+from .models import Profile, Course, Lesson, CourseAccess, Order, OrderItem, Certificate, OTPSession, Testimonial
 
 User = get_user_model()
 
@@ -276,14 +276,14 @@ def front_end_logout(request):
 # ==========================================
 
 def home_view(request):
-    """Render the home page with featured courses."""
+    """Render the home page with featured courses and testimonials."""
     courses = Course.objects.filter(is_published=True)[:3]
+    testimonials = Testimonial.objects.filter(is_active=True)
     welcome_banner = request.GET.get('welcome', 'false') == 'true'
-    # REMOVED: Automatic redirect to admin dashboard for master admin
-    # This allows the admin to view the homepage and other public pages while logged in.
         
     return render(request, 'core/home.html', {
         'featured_courses': courses,
+        'testimonials': testimonials,
         'welcome_banner': welcome_banner
     })
 
@@ -313,6 +313,15 @@ def course_catalog(request):
     elif sort_by == 'price_high':
         queryset = queryset.order_by('-price')
     
+    # Check purchase status for each course if user is logged in
+    if request.user.is_authenticated:
+        unlocked_course_ids = CourseAccess.objects.filter(user=request.user).values_list('course_id', flat=True)
+        for course in queryset:
+            course.is_purchased = course.id in unlocked_course_ids
+    else:
+        for course in queryset:
+            course.is_purchased = False
+
     context = {
         'courses': queryset,
         'selected_languages': selected_languages,
@@ -766,3 +775,135 @@ def update_lesson_order(request):
             return JsonResponse({'error': str(e)}, status=400)
     
     return JsonResponse({'error': 'Invalid method'}, status=405)
+
+import os
+import mimetypes
+from django.http import StreamingHttpResponse, Http404, HttpResponseForbidden
+from django.shortcuts import get_object_or_404
+from .models import Lesson, CourseAccess
+
+def stream_video(request, lesson_id):
+    """
+    Secure video streaming view with range request support.
+    """
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden("Authentication required")
+
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    
+    # Check if course is free or user has access
+    if not lesson.is_preview:
+        has_access = CourseAccess.objects.filter(user=request.user, course=lesson.course).exists()
+        if not has_access and not request.user.is_staff:
+            return HttpResponseForbidden("You do not have access to this video")
+
+    if not lesson.video:
+        raise Http404("Video not found")
+
+    video_path = lesson.video.path
+    if not os.path.exists(video_path):
+        raise Http404("Video file missing on server")
+
+    range_header = request.META.get('HTTP_RANGE', '').strip()
+    size = os.path.getsize(video_path)
+    content_type, _ = mimetypes.guess_type(video_path)
+    content_type = content_type or 'video/mp4'
+
+    start, end = 0, size - 1
+    if range_header:
+        range_match = re.match(r'bytes=(\d+)-(\d*)', range_header)
+        if range_match:
+            start = int(range_match.group(1))
+            if range_match.group(2):
+                end = int(range_match.group(2))
+
+    length = end - start + 1
+
+    def file_iterator(path, offset, chunk_size=8192):
+        with open(path, 'rb') as f:
+            f.seek(offset)
+            remaining = length
+            while remaining > 0:
+                data = f.read(min(chunk_size, remaining))
+                if not data:
+                    break
+                remaining -= len(data)
+                yield data
+
+    response = StreamingHttpResponse(file_iterator(video_path, start), status=206, content_type=content_type)
+    response['Content-Length'] = str(length)
+    response['Content-Range'] = f'bytes {start}-{end}/{size}'
+    response['Accept-Ranges'] = 'bytes'
+    response['Content-Disposition'] = 'inline'
+    # Security headers to prevent caching and sniffing
+    response['X-Content-Type-Options'] = 'nosniff'
+    response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    return response
+
+import os
+import re
+from django.http import StreamingHttpResponse, Http404
+
+def stream_video(request, lesson_id):
+    """
+    Secure video streaming view with range request support.
+    Verifies course access before streaming.
+    """
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    
+    # Check if user has access
+    has_access = CourseAccess.objects.filter(user=request.user, course=lesson.course).exists()
+    if not has_access and not lesson.is_preview and not request.user.is_staff:
+        raise Http404("You do not have access to this video.")
+
+    # Get video path
+    if lesson.video_file:
+        video_path = lesson.video_file.path
+    else:
+        raise Http404("Video file not found.")
+
+    if not os.path.exists(video_path):
+        raise Http404("Video file missing on server.")
+
+    range_header = request.META.get('HTTP_RANGE', '').strip()
+    range_match = re.match(r'bytes=(\d+)-(\d*)', range_header)
+    size = os.path.getsize(video_path)
+    content_type = 'video/mp4'
+
+    if range_match:
+        first_byte, last_byte = range_match.groups()
+        first_byte = int(first_byte) if first_byte else 0
+        last_byte = int(last_byte) if last_byte else size - 1
+        if last_byte >= size:
+            last_byte = size - 1
+        length = last_byte - first_byte + 1
+        
+        def file_iterator(file_name, chunk_size=8192, offset=0, length=None):
+            with open(file_name, 'rb') as f:
+                f.seek(offset, os.SEEK_SET)
+                remaining = length
+                while remaining > 0:
+                    chunk = f.read(min(chunk_size, remaining))
+                    if not chunk:
+                        break
+                    yield chunk
+                    remaining -= len(chunk)
+
+        response = StreamingHttpResponse(file_iterator(video_path, offset=first_byte, length=length), status=206, content_type=content_type)
+        response['Content-Length'] = str(length)
+        response['Content-Range'] = f'bytes {first_byte}-{last_byte}/{size}'
+    else:
+        def file_iterator(file_name, chunk_size=8192):
+            with open(file_name, 'rb') as f:
+                while True:
+                    chunk = f.read(chunk_size)
+                    if not chunk:
+                        break
+                    yield chunk
+
+        response = StreamingHttpResponse(file_iterator(video_path), content_type=content_type)
+        response['Content-Length'] = str(size)
+
+    response['Accept-Ranges'] = 'bytes'
+    response['X-Content-Type-Options'] = 'nosniff'
+    return response

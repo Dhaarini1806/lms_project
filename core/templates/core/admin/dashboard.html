@@ -1,141 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Tradersfy</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { background-color: #0A0A0A; color: #E0E0E0; font-family: 'Inter', sans-serif; }
-        .glass-card { background: rgba(22, 22, 22, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 193, 7, 0.1); border-radius: 16px; }
-        .sidebar { width: 280px; background-color: #111111; border-right: 1px solid #222222; }
-        .sidebar-item { display: flex; align-items: center; padding: 12px 24px; color: #888; transition: all 0.3s; border-radius: 12px; margin: 4px 16px; }
-        .sidebar-item:hover, .sidebar-item.active { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
-        .stat-card { background: linear-gradient(135deg, #161616 0%, #111111 100%); border: 1px solid #222222; border-radius: 20px; padding: 24px; transition: all 0.3s; }
-        .stat-card:hover { border-color: #ffc107; transform: translateY(-4px); }
-        .btn-amber { background: #ffc107; color: #000; font-weight: 700; padding: 12px 24px; border-radius: 12px; transition: all 0.3s; }
-        .btn-amber:hover { background: #ffb300; transform: scale(1.02); box-shadow: 0 4px 20px rgba(255, 193, 7, 0.2); }
-    </style>
-</head>
-<body class="flex h-screen overflow-hidden">
+{% extends 'core/admin/admin_base.html' %}
+{% block title %}Admin Dashboard - Tradersfy{% endblock %}
 
-    <!-- Sidebar -->
-    <aside class="sidebar flex flex-col h-full">
-        <div class="p-8">
-            <div class="text-2xl font-black tracking-tighter text-amber-400 flex items-center">
-                <span class="border-2 border-amber-400 px-2 py-0.5 rounded mr-2 text-sm">T</span> TRADERSFY <span class="text-xs text-gray-500 ml-2 font-normal">ADMIN</span>
+{% block admin_content %}
+<!-- Header -->
+<div class="flex justify-between items-center mb-12">
+    <div>
+        <h1 class="text-4xl font-black text-white mb-2">Welcome Back, Master Admin</h1>
+        <p class="text-gray-500">Manage platform student rosters and add new course configurations.</p>
+    </div>
+    <a href="{% url 'admin_add_course' %}" class="btn-primary text-black font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2">
+        <i class="fa-solid fa-plus"></i> Add New Course
+    </a>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    <div class="glass p-6 rounded-2xl border border-white/5">
+        <div class="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-4">Total Students</div>
+        <div class="flex items-end justify-between">
+            <div class="text-4xl font-black text-white">{{ stats.total_users }}</div>
+            <div class="w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center text-amber-400">
+                <i class="fa-solid fa-user-graduate text-xl"></i>
             </div>
         </div>
-        
-        <nav class="flex-1 space-y-1">
-            <a href="{% url 'admin_dashboard' %}" class="sidebar-item active"><i class="fa-solid fa-gauge-high mr-4"></i> Dashboard</a>
-            <a href="{% url 'admin_activity' %}" class="sidebar-item"><i class="fa-solid fa-bolt mr-4"></i> Activity</a>
-            <a href="{% url 'admin_courses' %}" class="sidebar-item"><i class="fa-solid fa-book-open mr-4"></i> Courses</a>
-            <a href="{% url 'admin_users' %}" class="sidebar-item"><i class="fa-solid fa-users mr-4"></i> Users</a>
-            <a href="{% url 'admin_groups' %}" class="sidebar-item"><i class="fa-solid fa-layer-group mr-4"></i> Groups</a>
-            <a href="{% url 'admin_transactions' %}" class="sidebar-item"><i class="fa-solid fa-credit-card mr-4"></i> Transactions</a>
-            <a href="{% url 'admin_analytics' %}" class="sidebar-item"><i class="fa-solid fa-chart-line mr-4"></i> Analytics</a>
-        </nav>
-
-        <div class="p-6 border-t border-gray-900">
-            <a href="{% url 'home' %}" class="sidebar-item text-sm"><i class="fa-solid fa-arrow-left mr-4"></i> Back to Site</a>
-            <a href="{% url 'logout' %}" class="sidebar-item text-sm text-red-400/70 hover:text-red-400"><i class="fa-solid fa-sign-out-alt mr-4"></i> Logout</a>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto bg-[#050505] p-10">
-        
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-12">
-            <div>
-                <h1 class="text-4xl font-black text-white mb-2">Welcome Back, Master Admin</h1>
-                <p class="text-gray-500">Manage platform student rosters and add new course configurations.</p>
-            </div>
-            <a href="{% url 'admin_add_course' %}" class="btn-amber">
-                <i class="fa-solid fa-plus mr-2"></i> Add New Course
-            </a>
-        </div>
-
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <div class="stat-card">
-                <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">Total Students</div>
-                <div class="flex items-end justify-between">
-                    <div class="text-4xl font-black text-white">{{ stats.total_users }}</div>
-                    <div class="w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center text-amber-400">
-                        <i class="fa-solid fa-user-graduate text-xl"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">Live Courses</div>
-                <div class="flex items-end justify-between">
-                    <div class="text-4xl font-black text-white">{{ stats.total_courses }}</div>
-                    <div class="w-12 h-12 rounded-full bg-blue-400/10 flex items-center justify-center text-blue-400">
-                        <i class="fa-solid fa-layer-group text-xl"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">Total Revenue</div>
-                <div class="flex items-end justify-between">
-                    <div class="text-4xl font-black text-white">₹{{ stats.total_revenue|floatformat:0 }}</div>
-                    <div class="w-12 h-12 rounded-full bg-emerald-400/10 flex items-center justify-center text-emerald-400">
-                        <i class="fa-solid fa-indian-rupee-sign text-xl"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">Active Orders</div>
-                <div class="flex items-end justify-between">
-                    <div class="text-4xl font-black text-white">{{ stats.completed_orders }}</div>
-                    <div class="w-12 h-12 rounded-full bg-purple-400/10 flex items-center justify-center text-purple-400">
-                        <i class="fa-solid fa-cart-shopping text-xl"></i>
-                    </div>
-                </div>
+    </div>
+    <div class="glass p-6 rounded-2xl border border-white/5">
+        <div class="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-4">Live Courses</div>
+        <div class="flex items-end justify-between">
+            <div class="text-4xl font-black text-white">{{ stats.total_courses }}</div>
+            <div class="w-12 h-12 rounded-full bg-blue-400/10 flex items-center justify-center text-blue-400">
+                <i class="fa-solid fa-layer-group text-xl"></i>
             </div>
         </div>
+    </div>
+    <div class="glass p-6 rounded-2xl border border-white/5">
+        <div class="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-4">Total Revenue</div>
+        <div class="flex items-end justify-between">
+            <div class="text-4xl font-black text-white">₹{{ stats.total_revenue|floatformat:0 }}</div>
+            <div class="w-12 h-12 rounded-full bg-emerald-400/10 flex items-center justify-center text-emerald-400">
+                <i class="fa-solid fa-indian-rupee-sign text-xl"></i>
+            </div>
+        </div>
+    </div>
+    <div class="glass p-6 rounded-2xl border border-white/5">
+        <div class="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-4">Active Orders</div>
+        <div class="flex items-end justify-between">
+            <div class="text-4xl font-black text-white">{{ stats.completed_orders }}</div>
+            <div class="w-12 h-12 rounded-full bg-purple-400/10 flex items-center justify-center text-purple-400">
+                <i class="fa-solid fa-cart-shopping text-xl"></i>
+            </div>
+        </div>
+    </div>
+</div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- Left: Enrolled Profiles -->
-            <div class="lg:col-span-4 space-y-6">
-                <h3 class="text-xl font-bold flex items-center">
-                    <i class="fa-solid fa-users-viewfinder text-amber-400 mr-3"></i> Enrolled Profiles
-                </h3>
-                <div class="glass-card overflow-hidden">
-                    <div class="max-h-[500px] overflow-y-auto p-4 space-y-4">
-                        {% for profile in profiles %}
-                        <div class="bg-[#1c1e24] p-4 rounded-xl border border-gray-800 hover:border-amber-400/30 transition">
-                            <div class="text-amber-400 font-bold">{{ profile.full_name|default:profile.phone_number }}</div>
-                            <div class="text-xs text-gray-500">{{ profile.city }}, {{ profile.state }}</div>
-                            <div class="mt-2 text-[10px] text-gray-600 font-mono">{{ profile.user.email }}</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Left: Enrolled Profiles -->
+    <div class="lg:col-span-4 space-y-6">
+        <h3 class="text-xl font-bold flex items-center text-white">
+            <i class="fa-solid fa-users-viewfinder text-amber-400 mr-3"></i> Enrolled Profiles
+        </h3>
+        <div class="glass rounded-2xl overflow-hidden">
+            <div class="max-h-[500px] overflow-y-auto p-4 space-y-4">
+                {% for profile in profiles %}
+                <div class="bg-white/5 p-4 rounded-xl border border-white/5 hover:border-amber-400/30 transition">
+                    <div class="text-amber-400 font-bold text-sm">{{ profile.full_name|default:profile.phone_number }}</div>
+                    <div class="text-[10px] text-gray-500">{{ profile.city|default:"Location Unknown" }}, {{ profile.state|default:"" }}</div>
+                    <div class="mt-2 text-[10px] text-gray-600 font-mono">{{ profile.user.email }}</div>
+                </div>
+                {% empty %}
+                <div class="text-center py-12 text-gray-600 text-sm">No student profiles found.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Recent Transactions -->
+    <div class="lg:col-span-8 space-y-6">
+        <h3 class="text-xl font-bold flex items-center text-white">
+            <i class="fa-solid fa-receipt text-amber-400 mr-3"></i> Recent Activity
+        </h3>
+        <div class="glass rounded-2xl overflow-hidden">
+            <div class="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                <span class="text-[10px] font-black uppercase tracking-widest text-gray-500">Transaction Feed</span>
+                <a href="{% url 'admin_transactions' %}" class="text-[10px] font-bold text-amber-400 hover:underline">View All</a>
+            </div>
+            <div class="divide-y divide-white/5">
+                {% for order in recent_orders %}
+                <div class="p-4 flex items-center justify-between hover:bg-white/[0.02] transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-amber-400">
+                            <i class="fa-solid fa-wallet text-sm"></i>
                         </div>
-                        {% empty %}
-                        <div class="text-center py-12 text-gray-600">No student profiles found.</div>
-                        {% endfor %}
+                        <div>
+                            <div class="text-sm font-bold text-white">{{ order.user.username }}</div>
+                            <div class="text-[10px] text-gray-500 font-mono">{{ order.order_id }}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm font-black text-amber-400">₹{{ order.total }}</div>
+                        <div class="text-[10px] text-gray-600">{{ order.created_at|timesince }} ago</div>
                     </div>
                 </div>
+                {% empty %}
+                <div class="py-20 text-center text-gray-600 text-sm">No recent transactions.</div>
+                {% endfor %}
             </div>
-
-            <!-- Right: Active Courses -->
-            <div class="lg:col-span-8 space-y-6">
-                <h3 class="text-xl font-bold flex items-center">
-                    <i class="fa-solid fa-clapperboard text-amber-400 mr-3"></i> Active Platform Courses
-                </h3>
-                <div class="glass-card p-8 min-h-[400px] flex items-center justify-center border-dashed border-2 border-gray-800">
-                    <div class="text-center space-y-4">
-                        <div class="text-gray-700 text-5xl"><i class="fa-solid fa-database"></i></div>
-                        <p class="text-gray-500">Explore and manage course data in the <a href="{% url 'admin_courses' %}" class="text-amber-400 underline">Courses Tab</a>.</p>
-                    </div>
-                </div>
-            </div>
-
         </div>
-
-    </main>
-
-</body>
-</html>
+    </div>
+</div>
+{% endblock %}

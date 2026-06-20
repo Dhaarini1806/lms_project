@@ -1,0 +1,110 @@
+{% extends 'core/admin/admin_base.html' %}
+{% block title %}Admin Dashboard - Tradersfy{% endblock %}
+
+{% block admin_content %}
+<!-- Header -->
+<div class="flex items-center justify-between mb-12">
+    <div>
+        <h1 class="text-3xl font-black text-white mb-2">System Overview</h1>
+        <p class="text-gray-500 text-sm">Welcome back, Master Admin. Here's what's happening today.</p>
+    </div>
+    <div class="flex gap-4">
+        <a href="{% url 'admin_add_course' %}" class="btn-primary text-black font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Add New Course
+        </a>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    <div class="glass p-6 rounded-2xl">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                <i class="fa-solid fa-users text-emerald-500"></i>
+            </div>
+            <span class="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">+12%</span>
+        </div>
+        <div class="text-2xl font-black text-white">{{ total_users }}</div>
+        <div class="text-xs text-gray-500 mt-1">Total Students</div>
+    </div>
+
+    <div class="glass p-6 rounded-2xl">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                <i class="fa-solid fa-graduation-cap text-blue-500"></i>
+            </div>
+        </div>
+        <div class="text-2xl font-black text-white">{{ total_courses }}</div>
+        <div class="text-xs text-gray-500 mt-1">Active Courses</div>
+    </div>
+
+    <div class="glass p-6 rounded-2xl">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                <i class="fa-solid fa-receipt text-purple-500"></i>
+            </div>
+        </div>
+        <div class="text-2xl font-black text-white">{{ total_orders }}</div>
+        <div class="text-xs text-gray-500 mt-1">Total Enrollments</div>
+    </div>
+
+    <div class="glass p-6 rounded-2xl">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                <i class="fa-solid fa-indian-rupee-sign text-amber-500"></i>
+            </div>
+        </div>
+        <div class="text-2xl font-black text-white">₹{{ total_revenue|default:"0" }}</div>
+        <div class="text-xs text-gray-500 mt-1">Total Revenue</div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Recent Activity -->
+    <div class="glass rounded-2xl overflow-hidden">
+        <div class="p-6 border-b border-borderGray flex items-center justify-between">
+            <h3 class="font-bold text-white">Recent Activity</h3>
+            <a href="{% url 'admin_activity' %}" class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">View All</a>
+        </div>
+        <div class="p-6 space-y-6">
+            {% for activity in recent_activities %}
+            <div class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 mt-1">
+                    <i class="fa-solid fa-bolt text-xs text-emerald-500"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-300"><span class="font-bold text-white">{{ activity.user.username }}</span> logged in</p>
+                    <p class="text-[10px] text-gray-600 mt-1">{{ activity.timestamp|timesince }} ago</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-gray-600 py-4 text-sm">No recent activity found.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Top Courses -->
+    <div class="glass rounded-2xl overflow-hidden">
+        <div class="p-6 border-b border-borderGray">
+            <h3 class="font-bold text-white">Top Courses</h3>
+        </div>
+        <div class="p-6 space-y-4">
+            {% for course in top_courses %}
+            <div class="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-cardBg overflow-hidden">
+                        {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}" class="w-full h-full object-cover">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center"><i class="fa-solid fa-book text-gray-800"></i></div>
+                        {% endif %}
+                    </div>
+                    <span class="text-sm font-semibold text-gray-200">{{ course.title }}</span>
+                </div>
+                <span class="text-xs font-bold text-emerald-500">{{ course.enrollment_count }} sales</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

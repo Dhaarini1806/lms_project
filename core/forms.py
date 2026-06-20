@@ -18,3 +18,25 @@ class GroupForm(forms.ModelForm):
     class Meta:
         model = Group
         fields = ['name']
+
+from django.forms import inlineformset_factory
+from .models import Course, Lesson
+
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = '__all__'
+
+class LessonForm(forms.ModelForm):
+    class Meta:
+        model = Lesson
+        fields = ['title', 'video_file', 'video_url', 'lesson_file', 'question_text', 'correct_answer', 'order', 'is_locked']
+
+LessonFormSet = inlineformset_factory(Course, Lesson, form=LessonForm, extra=1, can_delete=True)
+
+from .models import Testimonial
+
+class TestimonialForm(forms.ModelForm):
+    class Meta:
+        model = Testimonial
+        fields = ['name', 'role', 'content', 'image', 'is_active']

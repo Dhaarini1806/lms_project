@@ -1,111 +1,232 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Course - Tradersfy Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%); color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .sidebar { background: linear-gradient(180deg, #1e1e2e 0%, #16213e 100%); border-right: 1px solid rgba(255, 193, 7, 0.1); }
-        .sidebar-item { color: #b0b0b0; padding: 12px 20px; margin: 8px 12px; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-        .sidebar-item:hover, .sidebar-item.active { background: rgba(255, 193, 7, 0.15); color: #ffc107; border-left: 3px solid #ffc107; }
-        .nav-top { background: rgba(30, 30, 46, 0.9); border-bottom: 1px solid rgba(255, 193, 7, 0.1); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-primary { background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 193, 7, 0.3); }
-        .form-container { background: rgba(30, 30, 46, 0.8); border: 1px solid rgba(255, 193, 7, 0.1); border-radius: 12px; padding: 30px; max-width: 800px; }
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600; }
-        .form-input, .form-select, .form-textarea { width: 100%; background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px 15px; color: #e0e0e0; font-size: 14px; transition: all 0.3s; font-family: inherit; }
-        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #ffc107; background: rgba(255, 193, 7, 0.1); }
-        .form-textarea { resize: vertical; min-height: 100px; }
-        .logo { font-size: 20px; font-weight: bold; color: #ffc107; }
-    </style>
-</head>
-<body>
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div class="sidebar w-64 h-screen overflow-y-auto">
-            <div class="p-6 border-b border-amber-500/20">
-                <div class="logo"><i class="fas fa-chart-line text-amber-400 mr-2"></i>Traders<span class="text-gray-400">fy</span></div>
-                <p class="text-xs text-gray-500 mt-2">Admin Panel</p>
+{% extends 'core/admin/admin_base.html' %}
+{% load static %}
+
+{% block title %}Add New Course - Tradersfy{% endblock %}
+
+{% block admin_content %}
+<div class="flex items-center justify-between mb-10">
+    <div>
+        <h1 class="text-4xl font-black text-white tracking-tight">Add New Course</h1>
+        <p class="text-gray-500 text-sm mt-1">Design and publish a professional trading curriculum.</p>
+    </div>
+    <div class="flex gap-4">
+        <a href="{% url 'admin_courses' %}" class="px-6 py-3 rounded-2xl bg-zinc-900 text-gray-400 font-bold text-sm hover:bg-zinc-800 transition">Discard</a>
+        <button type="submit" form="course-form" class="btn-primary text-black font-bold px-10 py-3 rounded-2xl text-sm shadow-xl shadow-accentGreen/20">Publish Course</button>
+    </div>
+</div>
+
+<form id="course-form" method="post" enctype="multipart/form-data" class="space-y-10">
+    {% csrf_token %}
+
+    <!-- Section 1: Core Details -->
+    <div class="glass p-10 rounded-[2.5rem] border border-white/5 space-y-10">
+        <div class="flex items-center gap-3 border-b border-white/5 pb-8">
+            <div class="w-10 h-10 rounded-xl bg-accentGreen/10 flex items-center justify-center text-accentGreen">
+                <i class="fa-solid fa-info"></i>
             </div>
-            <nav class="mt-6">
-                <a href="{% url 'admin_dashboard' %}" class="sidebar-item"><i class="fas fa-home mr-3"></i>Dashboard</a>
-                <a href="{% url 'admin_courses' %}" class="sidebar-item active"><i class="fas fa-book mr-3"></i>Courses</a>
-                <a href="{% url 'admin_users' %}" class="sidebar-item"><i class="fas fa-users mr-3"></i>Users</a>
-                <a href="{% url 'admin_transactions' %}" class="sidebar-item"><i class="fas fa-credit-card mr-3"></i>Transactions</a>
-                <a href="{% url 'admin_analytics' %}" class="sidebar-item"><i class="fas fa-chart-bar mr-3"></i>Analytics</a>
-                <hr class="my-4 border-amber-500/10">
-                <a href="{% url 'home' %}" class="sidebar-item"><i class="fas fa-arrow-left mr-3"></i>Back to Site</a>
-                <a href="{% url 'logout' %}" class="sidebar-item"><i class="fas fa-sign-out-alt mr-3"></i>Logout</a>
-            </nav>
+            <h2 class="text-2xl font-bold text-white">Course Basics</h2>
         </div>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Nav -->
-            <div class="nav-top">
-                <h1 class="text-2xl font-bold">Add New Course</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div class="form-group">
+                <label>Course Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}<p class="text-red-400 text-xs mt-2">{{ form.title.errors }}</p>{% endif %}
             </div>
+            <div class="form-group">
+                <label>Course Slug</label>
+                {{ form.slug }}
+                {% if form.slug.errors %}<p class="text-red-400 text-xs mt-2">{{ form.slug.errors }}</p>{% endif %}
+            </div>
+        </div>
 
-            <!-- Content Area -->
-            <div class="flex-1 overflow-y-auto p-8">
-                <div class="form-container">
-                    <form method="POST">
-                        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="form-group">
+                <label>Language</label>
+                {{ form.language }}
+            </div>
+            <div class="form-group">
+                <label>Difficulty Level</label>
+                {{ form.level }}
+            </div>
+            <div class="form-group">
+                <label>Price (INR)</label>
+                {{ form.price }}
+            </div>
+        </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Course Title</label>
-                            <input type="text" name="title" class="form-input" placeholder="Enter course title" required>
+        <div class="form-group">
+            <label>Short Description (Marketing Summary)</label>
+            {{ form.short_description }}
+        </div>
+
+        <div class="form-group">
+            <label>Full Course Description</label>
+            {{ form.description }}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div class="form-group">
+                <label>Course Thumbnail URL</label>
+                {{ form.thumbnail_url }}
+                <div class="mt-4 drop-zone">
+                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-700 mb-4"></i>
+                    <p class="text-sm text-gray-500 font-medium">Drag & drop image or click to browse</p>
+                    <input type="file" name="thumbnail" accept="image/*">
+                </div>
+            </div>
+            <div class="space-y-8">
+                <div class="form-group">
+                    <label>Access Expiry (Days)</label>
+                    {{ form.expiry_duration_days }}
+                </div>
+                <div class="p-8 rounded-3xl bg-white/[0.02] border border-white/5 space-y-5">
+                    <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest">Security & Restrictions</h3>
+                    <label class="flex items-center gap-4 cursor-pointer group">
+                        <div class="relative flex items-center">
+                            {{ form.prevent_screenshots }}
                         </div>
-
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="form-group">
-                                <label class="form-label">Language</label>
-                                <select name="language" class="form-select" required>
-                                    <option value="English">English</option>
-                                    <option value="Hindi">Hindi</option>
-                                    <option value="Spanish">Spanish</option>
-                                    <option value="French">French</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Level</label>
-                                <select name="level" class="form-select" required>
-                                    <option value="Beginner">Beginner</option>
-                                    <option value="Intermediate">Intermediate</option>
-                                    <option value="Advanced">Advanced</option>
-                                </select>
-                            </div>
+                        <span class="text-sm text-gray-400 group-hover:text-white transition">Anti-Screenshot & Recording</span>
+                    </label>
+                    <label class="flex items-center gap-4 cursor-pointer group">
+                        <div class="relative flex items-center">
+                            {{ form.restrict_downloads }}
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Price (₹)</label>
-                            <input type="number" name="price" class="form-input" placeholder="Enter course price" step="0.01" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Description</label>
-                            <textarea name="description" class="form-textarea" placeholder="Enter course description" required></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Author Name</label>
-                            <input type="text" name="author_name" class="form-input" value="Kevin Marks" placeholder="Enter author name" required>
-                        </div>
-
-                        <div class="flex gap-4">
-                            <button type="submit" class="btn-primary flex-1"><i class="fas fa-save mr-2"></i>Create Course</button>
-                            <a href="{% url 'admin_courses' %}" class="btn-primary flex-1" style="background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); text-align: center; text-decoration: none;"><i class="fas fa-times mr-2"></i>Cancel</a>
-                        </div>
-                    </form>
+                        <span class="text-sm text-gray-400 group-hover:text-white transition">Disable Right-Click & Downloads</span>
+                    </label>
                 </div>
             </div>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Section 2: Syllabus -->
+    <div class="space-y-8">
+        <div class="flex items-center justify-between px-2">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-accentAmber/10 flex items-center justify-center text-accentAmber">
+                    <i class="fa-solid fa-list-ul"></i>
+                </div>
+                <h2 class="text-3xl font-black text-white">Course Syllabus</h2>
+            </div>
+            <button type="button" id="add-lesson-button" class="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm hover:bg-white/10 transition flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i> Add New Lesson
+            </button>
+        </div>
+
+        <div id="lesson-formset-container" class="space-y-8">
+            {{ formset.management_form }}
+            {% for lesson_form in formset %}
+                <div class="lesson-form glass p-10 rounded-[2.5rem] border border-white/5 relative group transition-all hover:border-white/10">
+                    <div class="flex items-center justify-between mb-10">
+                        <h3 class="text-xl font-black text-white flex items-center gap-4">
+                            <span class="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center text-xs text-gray-500 border border-white/5">#{{ forloop.counter }}</span>
+                            Lesson Content
+                        </h3>
+                        {% if lesson_form.instance.pk %}
+                        <div class="flex items-center gap-4 px-4 py-2 rounded-xl bg-red-500/5 border border-red-500/10">
+                            <label class="flex items-center gap-2 cursor-pointer text-[10px] font-black uppercase tracking-widest text-red-500/60 hover:text-red-500 transition">
+                                {{ lesson_form.DELETE }}
+                                <span>Remove Lesson</span>
+                            </label>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% for hidden in lesson_form.hidden_fields %}{{ hidden }}{% endfor %}
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                        <div class="md:col-span-2 form-group">
+                            <label>Lesson Title</label>
+                            {{ lesson_form.title }}
+                        </div>
+                        <div class="form-group">
+                            <label>Order Index</label>
+                            {{ lesson_form.order }}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div class="space-y-8">
+                            <div class="form-group">
+                                <label>Video Stream URL</label>
+                                {{ lesson_form.video_url }}
+                            </div>
+                            <div class="form-group">
+                                <label>Or Secure Video Upload</label>
+                                <div class="drop-zone">
+                                    <i class="fa-solid fa-video text-3xl text-gray-700 mb-3"></i>
+                                    <p class="text-xs text-gray-500">Drag video file here</p>
+                                    {{ lesson_form.video_file }}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Lesson Resource (PDF/ZIP)</label>
+                                <div class="drop-zone p-6">
+                                    <i class="fa-solid fa-file-zipper text-2xl text-gray-700 mb-2"></i>
+                                    <p class="text-[10px] text-gray-500">Upload lesson files</p>
+                                    {{ lesson_form.lesson_file }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-8 rounded-3xl bg-white/[0.015] border border-white/5 space-y-8">
+                            <div class="form-group">
+                                <label>Completion Challenge (Question)</label>
+                                {{ lesson_form.question_text }}
+                            </div>
+                            <div class="form-group">
+                                <label>Correct Answer Key</label>
+                                {{ lesson_form.correct_answer }}
+                            </div>
+                            <div class="pt-4">
+                                <label class="flex items-center gap-4 cursor-pointer group">
+                                    {{ lesson_form.is_locked }}
+                                    <span class="text-sm text-gray-400 group-hover:text-white transition">Lock until previous completed</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</form>
+
+{% block extra_js %}
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Dynamic Formset Handler
+        $('#add-lesson-button').click(function() {
+            const prefix = 'lessons';
+            const container = $('#lesson-formset-container');
+            const totalForms = $(`input[name='${prefix}-TOTAL_FORMS']`);
+            const currentCount = parseInt(totalForms.val());
+            
+            const newForm = $(".lesson-form:first").clone(true);
+            
+            newForm.find(':input').each(function() {
+                const name = $(this).attr('name');
+                if(name) {
+                    const newName = name.replace(/-\d+-/, `-${currentCount}-`);
+                    $(this).attr('name', newName).attr('id', `id_${newName}`);
+                    if(!$(this).is(':checkbox')) $(this).val('');
+                    else $(this).prop('checked', false);
+                }
+            });
+
+            newForm.find('label').each(function() {
+                const forAttr = $(this).attr('for');
+                if(forAttr) $(this).attr('for', forAttr.replace(/-\d+-/, `-${currentCount}-`));
+            });
+
+            newForm.find('span.w-10').text(`#${currentCount + 1}`);
+            newForm.hide().appendTo(container).fadeIn(300);
+            
+            totalForms.val(currentCount + 1);
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

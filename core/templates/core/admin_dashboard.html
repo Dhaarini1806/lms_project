@@ -1,254 +1,115 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tradersfy Admin Dashboard</title>
-    <!-- Tailwind CSS (you may replace with your own build) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-</head>
-<body class="bg-[#0A0A0A] text-white h-screen font-sans overflow-hidden flex">
+{% extends 'core/base.html' %}
+{% block title %}Admin Dashboard - Tradersfy{% endblock %}
+{% block content %}
+<div class="flex min-h-screen">
+    {% include 'core/admin/sidebar.html' %}
 
-    <!-- Sidebar -->
-    <aside class="w-72 bg-[#121212] border-r border-zinc-800 flex flex-col h-full shrink-0">
-        <div class="p-6 border-b border-zinc-800">
-            <h1 class="text-xl font-bold tracking-wider text-amber-500">
-                TRADERSFY <span class="text-xs text-zinc-400 font-normal">ADMIN</span>
-            </h1>
-        </div>
-
-        <nav class="flex-1 overflow-y-auto py-4">
-            <div class="px-6 mb-2">
-                <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Insights & Monitoring</h3>
-                <ul class="space-y-1">
-                    <li><a href="{% url 'admin_activity' %}" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
-                        <span class="group-hover:translate-x-1 transition-transform">Live Activity</span>
-                        <span class="text-amber-500 text-[10px] font-bold">LIVE</span>
-                    </a></li>
-                </ul>
+    <main class="flex-1 p-10 bg-darkBg">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-12">
+            <div>
+                <h1 class="text-3xl font-black text-white mb-2">System Overview</h1>
+                <p class="text-gray-500 text-sm">Welcome back, Master Admin. Here's what's happening today.</p>
             </div>
-
-            <div class="px-6 mb-2">
-                <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Authentication & Auth</h3>
-                <ul class="space-y-1">
-                    <li><a href="{% url 'admin_groups' %}" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
-                        <span class="group-hover:translate-x-1 transition-transform">Groups</span>
-                        <a href="{% url 'admin_add_group' %}" class="text-zinc-600 hover:text-amber-500">+ Add</a>
-                    </a></li>
-                    <li><a href="{% url 'admin_users' %}" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
-                        <span class="group-hover:translate-x-1 transition-transform">Users</span>
-                        <a href="{% url 'admin_add_user' %}" class="text-zinc-600 hover:text-amber-500">+ Add</a>
-                    </a></li>
-                </ul>
-            </div>
-
-            <div class="h-px bg-zinc-800 my-4 mx-6"></div>
-<div class="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-    {% for profile in profiles %}
-    <div class="p-3 bg-[#1e1e1e] rounded-lg border border-zinc-800 flex flex-col">
-        <span class="font-medium text-sm text-amber-400">
-            {{ profile.full_name|default:"(No name)" }}
-        </span>
-        <span class="text-xs text-zinc-400 mt-1">
-            Email: {{ profile.alt_email|default:"(None)" }}
-        </span>
-        <span class="text-xs text-zinc-400 mt-1">
-            Employee ID: {{ profile.employee_id|default:"(None)" }}
-        </span>
-        <span class="text-xs text-zinc-400 mt-1">
-            Type: {{ profile.get_user_type_display }}
-        </span>
-        <span class="text-xs text-zinc-400 mt-1">
-            Phone: {{ profile.phone_number|default:"(None)" }}
-        </span>
-        <span class="text-xs text-zinc-400 mt-1">
-            {{ profile.city }}, {{ profile.state }}
-        </span>
-    </div>
-    {% empty %}
-    <p class="text-sm text-zinc-500 py-4 text-center">
-        No standard user profiles found yet.
-    </p>
-    {% endfor %}
-</div>
-            <div class="px-6 mb-2">
-                <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Core LMS</h3>
-                <ul class="space-y-1">
-                    <li><a href="#" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
-                        <span class="group-hover:translate-x-1 transition-transform">Certificates</span>
-                        <span class="text-zinc-600">+ Add</span>
-                    </a></li>
-                    <li><a href="#" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
-                        <span class="group-hover:translate-x-1 transition-transform">Course Access Controls</span>
-                        <span class="text-zinc-600">+ Add</span>
-                    </a></li>
-                    <li><a href="#" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-amber-500 group font-medium">
-                        <span class="group-hover:translate-x-1 transition-transform">Courses</span>
-                        <span class="text-amber-600/50">+ Add</span>
-                    </a></li>
-                    <li><a href="#" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
-                        <span class="group-hover:translate-x-1 transition-transform">Orders</span>
-                        <span class="text-zinc-600">+ Add</span>
-                    </a></li>
-                    <li><a href="#" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
-                        <span class="group-hover:translate-x-1 transition-transform">Profiles</span>
-                        <span class="text-zinc-600">+ Add</span>
-                    </a></li>
-                </ul>
-            </div>
-        </nav>
-
-        <div class="p-4 border-t border-zinc-800">
-            <a href="{% url 'course_catalog' %}" class="block w-full text-center text-sm text-zinc-400 hover:text-white transition py-2">
-                ← Back to Main Site
-            </a>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto bg-[#0A0A0A]">
-        <div class="max-w-7xl mx-auto p-8 space-y-8">
-
-            <!-- Header -->
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#161616] p-6 rounded-xl border border-zinc-800">
-                <div>
-                    <h2 class="text-2xl font-bold">Welcome Back, Master Admin</h2>
-                    <p class="text-sm text-zinc-400 mt-1">Manage platform student rosters and add new course configurations.</p>
-                </div>
-                <a href="{% url 'admin_add_course' %}"
-                   class="bg-amber-500 hover:bg-amber-600 text-black font-semibold px-5 py-2.5 rounded-lg transition text-sm shadow-lg shadow-amber-500/10">
-                    + Add New Course
+            <div class="flex gap-4">
+                <a href="{% url 'admin_add_course' %}" class="btn-primary text-black font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Add New Course
                 </a>
             </div>
+        </div>
 
-            <!-- Dashboard Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div class="glass p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                        <i class="fa-solid fa-users text-emerald-500"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">+12%</span>
+                </div>
+                <div class="text-2xl font-black text-white">{{ total_users }}</div>
+                <div class="text-xs text-gray-500 mt-1">Total Students</div>
+            </div>
 
-                <!-- Profiles Card -->
-                <div class="bg-[#161616] p-6 rounded-xl border border-zinc-800 flex flex-col h-fit">
-                    <h3 class="text-lg font-bold text-zinc-200 border-b border-zinc-800 pb-3 mb-4">Enrolled Profiles</h3>
-                    <div class="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-                        {% for profile in profiles %}
-                        <div class="p-3 bg-[#1e1e1e] rounded-lg border border-zinc-800 flex flex-col">
-                            <span class="font-medium text-sm text-amber-400">{{ profile.whatsapp_number }}</span>
-                            <span class="text-xs text-zinc-400 mt-1">{{ profile.city }}, {{ profile.state }}</span>
-                        </div>
-                        {% empty %}
-                        <p class="text-sm text-zinc-500 py-4 text-center">No standard user profiles found yet.</p>
-                        {% endfor %}
+            <div class="glass p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                        <i class="fa-solid fa-graduation-cap text-blue-500"></i>
                     </div>
                 </div>
+                <div class="text-2xl font-black text-white">{{ total_courses }}</div>
+                <div class="text-xs text-gray-500 mt-1">Active Courses</div>
+            </div>
 
-                <!-- Courses Card -->
-                <div class="lg:col-span-2 bg-[#161616] p-6 rounded-xl border border-zinc-800">
-                    <h3 class="text-lg font-bold text-zinc-200 border-b border-zinc-800 pb-3 mb-4">Active Platform Courses</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto pr-2">
-                        {% for course in courses %}
-                        <div class="p-4 bg-[#1e1e1e] rounded-lg border border-zinc-800 flex flex-col justify-between">
-                            <div>
-                                <span class="text-[10px] uppercase font-bold tracking-widest text-zinc-500">
-                                    {{ course.level }} • {{ course.language }}
-                                </span>
-                                <h4 class="font-semibold text-base mt-1 text-white">{{ course.title }}</h4>
-                                <p class="text-xs text-zinc-400 line-clamp-2 mt-2">
-                                    {{ course.description|default:"No description provided yet." }}
-                                </p>
-                            </div>
-                            <div class="border-t border-zinc-800 mt-4 pt-3 flex justify-between items-center">
-                                <span class="text-sm font-bold text-amber-500">₹{{ course.price }}</span>
-                                <span class="text-xs bg-zinc-800 px-2 py-1 rounded text-zinc-400">
-                                    Rating: {{ course.rating|default:"0.0" }}
-                                </span>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <div class="col-span-2 py-12 text-center border-2 border-dashed border-zinc-800 rounded-xl">
-                            <p class="text-sm text-zinc-500">No courses listed in database directory.</p>
-                        </div>
-                        {% endfor %}
+            <div class="glass p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                        <i class="fa-solid fa-receipt text-purple-500"></i>
                     </div>
+                </div>
+                <div class="text-2xl font-black text-white">{{ total_orders }}</div>
+                <div class="text-xs text-gray-500 mt-1">Total Enrollments</div>
+            </div>
+
+            <div class="glass p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                        <i class="fa-solid fa-indian-rupee-sign text-amber-500"></i>
+                    </div>
+                </div>
+                <div class="text-2xl font-black text-white">₹{{ total_revenue|default:"0" }}</div>
+                <div class="text-xs text-gray-500 mt-1">Total Revenue</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Recent Activity -->
+            <div class="glass rounded-2xl overflow-hidden">
+                <div class="p-6 border-b border-borderGray flex items-center justify-between">
+                    <h3 class="font-bold text-white">Recent Activity</h3>
+                    <a href="{% url 'admin_activity' %}" class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">View All</a>
+                </div>
+                <div class="p-6 space-y-6">
+                    {% for activity in recent_activities %}
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 mt-1">
+                            <i class="fa-solid fa-bolt text-xs text-emerald-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-300"><span class="font-bold text-white">{{ activity.user.username }}</span> logged in</p>
+                            <p class="text-[10px] text-gray-600 mt-1">{{ activity.timestamp|timesince }} ago</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-center text-gray-600 py-4 text-sm">No recent activity found.</p>
+                    {% endfor %}
                 </div>
             </div>
 
-            <!-- Syllabus Builder -->
-            <div class="bg-[#161616] p-6 rounded-xl border border-zinc-800">
-                <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4">
-                    <h3 class="text-lg font-bold text-zinc-200">Syllabus Builder</h3>
-                    <span class="text-xs text-zinc-500 bg-zinc-800 px-3 py-1 rounded-full">
-                        Drag rows to reorder modules
-                    </span>
+            <!-- Top Courses -->
+            <div class="glass rounded-2xl overflow-hidden">
+                <div class="p-6 border-b border-borderGray">
+                    <h3 class="font-bold text-white">Top Courses</h3>
                 </div>
-
-                <ul id="curriculum-list" class="space-y-2">
-                    {% for lesson in lessons %}
-                    <li data-id="{{ lesson.id }}" class="flex items-center justify-between bg-[#1e1e1e] border border-zinc-800 p-3 rounded-lg cursor-grab active:cursor-grabbing hover:bg-zinc-800/50 transition">
-                        <div class="flex items-center gap-4">
-                            <span class="text-zinc-600 cursor-grab">⋮⋮</span>
-                            <div class="flex flex-col">
-                                <span class="text-xs text-amber-500 font-semibold">{{ lesson.course.title }}</span>
-                                <span class="text-zinc-200 font-medium text-sm">{{ lesson.section_name }} - {{ lesson.title }}</span>
+                <div class="p-6 space-y-4">
+                    {% for course in top_courses %}
+                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-cardBg overflow-hidden">
+                                {% if course.thumbnail %}
+                                <img src="{{ course.thumbnail.url }}" class="w-full h-full object-cover">
+                                {% else %}
+                                <div class="w-full h-full flex items-center justify-center"><i class="fa-solid fa-book text-gray-800"></i></div>
+                                {% endif %}
                             </div>
+                            <span class="text-sm font-semibold text-gray-200">{{ course.title }}</span>
                         </div>
-
-                        {% if lesson.is_preview %}
-                        <span class="text-xs font-medium px-3 py-1 rounded border border-emerald-900/50 bg-emerald-900/20 text-emerald-400">
-                            🔓 Unlocked (Preview)
-                        </span>
-                        {% else %}
-                        <span class="text-xs font-medium px-3 py-1 rounded border border-red-900/50 bg-red-900/20 text-red-400">
-                            🔒 Locked
-                        </span>
-                        {% endif %}
-                    </li>
-                    {% empty %}
-                    <div class="py-12 text-center border-2 border-dashed border-zinc-800 rounded-xl">
-                        <p class="text-sm text-zinc-500">No lessons created yet. Add courses and lessons first.</p>
+                        <span class="text-xs font-bold text-emerald-500">{{ course.enrollment_count }} sales</span>
                     </div>
                     {% endfor %}
-                </ul>
+                </div>
             </div>
-
         </div>
     </main>
-
-    <!-- Drag‑and‑Drop Script -->
-    <script>
-        const curriculumList = document.getElementById('curriculum-list');
-
-        if (curriculumList.children.length > 0) {
-            new Sortable(curriculumList, {
-                animation: 150,
-                ghostClass: 'opacity-40',
-                onEnd: function (evt) {
-                    // New lesson order
-                    let orderArray = [];
-                    document.querySelectorAll('#curriculum-list li').forEach(item => {
-                        if (item.dataset.id) {
-                            orderArray.push(item.dataset.id);
-                        }
-                    });
-
-                    // Send order to the server
-                    fetch('{% url "update_lesson_order" %}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X‑CSRFToken': '{{ csrf_token }}'
-                        },
-                        body: JSON.stringify({ order: orderArray })
-                    })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            console.log('Syllabus order successfully updated in database!');
-                        } else {
-                            console.error('Error saving order:', data.error);
-                        }
-                    });
-                },
-            });
-        }
-    </script>
-</body>
-</html>
+</div>
+{% endblock %}

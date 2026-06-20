@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tradersfy - Professional Trading Education{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0A0A0F',
+                        cardBg: '#12121A',
+                        borderGray: 'rgba(255,255,255,0.05)',
+                        accentGreen: '#10B981',
+                        accentAmber: '#F59E0B'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { 
+            background-color: #0A0A0F; 
+            color: #E2E8F0; 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #0A0A0F 100%);
+            min-height: 100vh;
+        }
+        .glass { background: rgba(18, 18, 26, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        .gradient-text { background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-primary { background: linear-gradient(135deg, #10B981 0%, #059669 100%); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="antialiased">
+    {% block content %}{% endblock %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

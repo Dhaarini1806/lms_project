@@ -16,14 +16,14 @@ from .views import (
     toggle_wishlist,
     verify_payment,
     order_success,
-    admin_dashboard,
-    admin_add_course,
-    update_lesson_order,
     profile_view,
+    stream_video,
 )
 
 from .admin_views import (
+    admin_dashboard,
     admin_courses,
+    admin_add_course,
     admin_edit_course,
     admin_delete_course,
     admin_users,
@@ -37,6 +37,10 @@ from .admin_views import (
     admin_download_transactions_pdf,
     admin_analytics,
     admin_activity,
+    admin_dashboard,
+    update_lesson_order,
+    admin_testimonials,
+    admin_delete_testimonial,
 )
 
 from .invoice_views import (
@@ -99,7 +103,11 @@ urlpatterns = [
     path('master/analytics/', admin_analytics, name='admin_analytics'),
     path('master/activity/', admin_activity, name='admin_activity'),
     path('master/update-lesson-order/', update_lesson_order, name='update_lesson_order'),
+    path('master/testimonials/', admin_testimonials, name='admin_testimonials'),
+    path('master/delete-testimonial/<int:testimonial_id>/', admin_delete_testimonial, name='admin_delete_testimonial'),
+    path('stream-video/<int:lesson_id>/', stream_video, name='stream_video'),
     
     # Lesson Player
     path('courses/<slug:course_slug>/lessons/<slug:lesson_slug>/player/', lesson_detail, name='lesson_player'),
+    path('api/stream-video/<int:lesson_id>/', stream_video, name='api_stream_video'),
 ]

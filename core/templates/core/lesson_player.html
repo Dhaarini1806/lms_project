@@ -58,8 +58,16 @@
         <!-- Main Content -->
         <div>
             <!-- Video Player -->
-            <div class="video-player">
-                {% if lesson.video_url %}
+            <div class="video-player relative group" id="videoWrapper">
+                {% if lesson.video %}
+                    <!-- Transparent Security Overlay to prevent easy interaction -->
+                    <div id="videoOverlay" class="absolute inset-0 z-10 bg-transparent cursor-default" oncontextmenu="return false;"></div>
+                    
+                    <video id="lessonVideo" class="w-full h-full rounded-xl" controls controlsList="nodownload noremoteplayback" oncontextmenu="return false;">
+                        <source src="{% url 'stream_video' lesson.id %}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                {% elif lesson.video_url %}
                     <iframe src="{{ lesson.video_url }}" allowfullscreen></iframe>
                 {% else %}
                     <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">
@@ -135,5 +143,39 @@
             </div>
         </div>
     </div>
+    <script>
+        // Security: Prevent Right-Click and DevTools
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        
+        document.addEventListener('keydown', e => {
+            // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+            if (
+                e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                (e.ctrlKey && e.key === 'u')
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Anti-Screen Recording/Screenshot (Visual Warning)
+        document.addEventListener('keyup', e => {
+            if (e.key === 'PrintScreen') {
+                navigator.clipboard.writeText('');
+                alert('Screenshots are disabled for security reasons.');
+            }
+        });
+
+        // Overlay handling to allow play/pause but block source inspection
+        const overlay = document.getElementById('videoOverlay');
+        const video = document.getElementById('lessonVideo');
+        if (overlay && video) {
+            overlay.addEventListener('click', () => {
+                if (video.paused) video.play();
+                else video.pause();
+            });
+        }
+    </script>
 </body>
 </html>

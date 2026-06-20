@@ -15,7 +15,8 @@ from django.db.models import Q, Sum, Count
 from django.utils.text import slugify
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Profile, Course, Lesson, Order, OrderItem, CourseAccess, Certificate
+from .models import Profile, Course, Lesson, Order, OrderItem, CourseAccess, Certificate, Testimonial
+from .forms import CourseForm, LessonFormSet, TestimonialForm
 
 # PDF Generation Libraries
 from reportlab.lib.pagesizes import letter, A4
@@ -222,58 +223,64 @@ def admin_courses(request):
 
 @login_required
 def admin_add_course(request):
-    """Add a new course."""
+    """Add a new course with dynamic lessons."""
     if not is_master_admin(request.user):
         return redirect('home')
-    
+
     if request.method == 'POST':
-        title = request.POST.get('title', '').strip()
-        language = request.POST.get('language', 'English')
-        level = request.POST.get('level', 'Beginner')
-        price = request.POST.get('price', 0)
-        description = request.POST.get('description', '').strip()
-        author_name = request.POST.get('author_name', 'Kevin Marks').strip()
-        
-        slug = slugify(title)
-        
-        course = Course.objects.create(
-            title=title,
-            slug=slug,
-            language=language,
-            level=level,
-            price=price,
-            description=description,
-            author_name=author_name,
-            is_published=True
-        )
-        messages.success(request, f"Course '{title}' created successfully!")
-        return redirect('admin_courses')
-    
-    return render(request, 'core/admin/add_course.html')
+        form = CourseForm(request.POST)
+        formset = LessonFormSet(request.POST, request.FILES)
+        if form.is_valid() and formset.is_valid():
+            course = form.save(commit=False)
+            course.slug = slugify(course.title)
+            course.save()
+            formset.instance = course
+            formset.save()
+            messages.success(request, f"Course '{course.title}' created successfully!")
+            return redirect('admin_courses')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = CourseForm()
+        formset = LessonFormSet()
+
+    context = {
+        'form': form,
+        'formset': formset,
+    }
+    return render(request, 'core/admin/add_course.html', context)
 
 
 @login_required
 def admin_edit_course(request, course_id):
-    """Edit an existing course."""
+    """Edit an existing course with dynamic lessons."""
     if not is_master_admin(request.user):
         return redirect('home')
-    
+
     course = get_object_or_404(Course, id=course_id)
-    
+
     if request.method == 'POST':
-        course.title = request.POST.get('title', course.title).strip()
-        course.language = request.POST.get('language', course.language)
-        course.level = request.POST.get('level', course.level)
-        course.price = request.POST.get('price', course.price)
-        course.description = request.POST.get('description', course.description).strip()
-        course.author_name = request.POST.get('author_name', course.author_name).strip()
-        course.is_published = request.POST.get('is_published') == 'on'
-        course.save()
-        
-        messages.success(request, "Course updated successfully!")
-        return redirect('admin_courses')
-    
-    context = {'course': course}
+        form = CourseForm(request.POST, instance=course)
+        formset = LessonFormSet(request.POST, request.FILES, instance=course)
+        if form.is_valid() and formset.is_valid():
+            course = form.save(commit=False)
+            course.slug = slugify(course.title)
+            course.save()
+            formset.instance = course
+            formset.save()
+            messages.success(request, "Course updated successfully!")
+            return redirect('admin_courses')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = CourseForm(instance=course)
+        formset = LessonFormSet(instance=course)
+
+    context = {
+        'course': course,
+        'form': form,
+        'formset': formset,
+    }
     return render(request, 'core/admin/edit_course.html', context)
 
 
@@ -410,6 +417,45 @@ def admin_download_transactions_pdf(request):
 
 
 # ==========================================
+# TESTIMONIAL MANAGEMENT
+# ==========================================
+
+@login_required
+def admin_testimonials(request):
+    """View and manage testimonials."""
+    if not is_master_admin(request.user):
+        return redirect('home')
+    
+    if request.method == 'POST':
+        form = TestimonialForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Testimonial added successfully!")
+            return redirect('admin_testimonials')
+    else:
+        form = TestimonialForm()
+    
+    testimonials = Testimonial.objects.all()
+    context = {
+        'form': form,
+        'testimonials': testimonials,
+    }
+    return render(request, 'core/admin/testimonials.html', context)
+
+
+@login_required
+def admin_delete_testimonial(request, testimonial_id):
+    """Delete a testimonial."""
+    if not is_master_admin(request.user):
+        return redirect('home')
+    
+    testimonial = get_object_or_404(Testimonial, id=testimonial_id)
+    testimonial.delete()
+    messages.success(request, "Testimonial deleted successfully!")
+    return redirect('admin_testimonials')
+
+
+# ==========================================
 # ANALYTICS & REPORTS
 # ==========================================
 
@@ -517,3 +563,46 @@ def admin_activity(request):
         'transactions': transactions,
     }
     return render(request, 'core/admin/activity.html', context)
+
+@csrf_exempt
+@login_required
+def update_lesson_order(request):
+    """Update the order of lessons via AJAX."""
+    if not is_master_admin(request.user):
+        return JsonResponse({'status': 'error', 'message': 'Unauthorized access'}, status=403)
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            lessons_data = data.get('lessons')
+
+            if not lessons_data:
+                return JsonResponse({'status': 'error', 'message': 'No lesson data provided'}, status=400)
+
+            for lesson_item in lessons_data:
+                lesson_id = lesson_item.get('id')
+                order = lesson_item.get('order')
+                is_locked = lesson_item.get('is_locked')
+
+                if lesson_id is None or order is None or is_locked is None:
+                    return JsonResponse({'status': 'error', 'message': 'Invalid lesson data format'}, status=400)
+
+                try:
+                    lesson = Lesson.objects.get(id=lesson_id)
+                    lesson.order = order
+                    lesson.is_locked = is_locked
+                    lesson.save()
+                except Lesson.DoesNotExist:
+                    # Log this, but don't stop the process for other lessons
+                    print(f"Warning: Lesson with ID {lesson_id} not found.")
+                    continue
+            
+            return JsonResponse({'status': 'success', 'message': 'Lesson order and lock status updated successfully.'})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            print(f"Error updating lesson order: {e}")
+            return JsonResponse({'status': 'error', 'message': f'An error occurred: {str(e)}'}, status=500)
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)

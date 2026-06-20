@@ -1,0 +1,253 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --sidebar-width: 280px;
+        --accent-primary: #10B981;
+        --bg-dark: #0A0A0F;
+        --card-bg: rgba(18, 18, 26, 0.9);
+        --top-nav-height: 0px; /* Adjust if a top nav is added later */
+    }
+
+    body {
+        background-color: var(--bg-dark);
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Fixed Sticky Sidebar */
+    .glass-sidebar { 
+        background: var(--card-bg); 
+        backdrop-filter: blur(24px); 
+        border-right: 1px solid rgba(255,255,255,0.08); 
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: var(--sidebar-width);
+        height: 100vh;
+        z-index: 1000; /* High z-index to stay on top */
+        display: flex;
+        flex-direction: column;
+        padding: 2rem 1.5rem;
+    }
+
+    .sidebar-link { 
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        padding: 0.875rem 1.25rem;
+        border-radius: 1rem;
+        color: #94a3b8;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        margin-bottom: 0.5rem;
+    }
+
+    .sidebar-link:hover { 
+        background: rgba(255, 255, 255, 0.05);
+        color: #ffffff;
+    }
+
+    .sidebar-link.active { 
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
+        color: var(--accent-primary);
+        font-weight: 600;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    /* Main Content Layout - Fixed Margin to prevent overlap */
+    .admin-main {
+        margin-left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+        min-height: 100vh;
+        padding: 4rem 3rem 3rem 3rem; /* Increased top padding */
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Enhanced Form UI */
+    .form-group label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #94a3b8;
+        margin-bottom: 0.5rem;
+        margin-left: 0.25rem;
+    }
+
+    input[type="text"], input[type="number"], input[type="url"], input[type="email"], 
+    input[type="password"], select, textarea {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 1rem !important;
+        color: white !important;
+        padding: 0.875rem 1.25rem !important;
+        width: 100%;
+        font-size: 0.9375rem;
+        transition: all 0.2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border-color: var(--accent-primary) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1) !important;
+    }
+
+    textarea {
+        min-height: 150px;
+        line-height: 1.6;
+    }
+
+    /* Drag & Drop */
+    .drop-zone {
+        border: 2px dashed rgba(255, 255, 255, 0.1);
+        border-radius: 1.25rem;
+        padding: 2.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.01);
+        cursor: pointer;
+        position: relative;
+    }
+
+    .drop-zone:hover, .drop-zone.drag-over {
+        border-color: var(--accent-primary);
+        background: rgba(16, 185, 129, 0.05);
+    }
+
+    .drop-zone input[type="file"] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0; left: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    /* Security Deterrents */
+    @media print {
+        body { display: none !important; }
+    }
+</style>
+{% block admin_extra_css %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="flex min-h-screen">
+    <!-- Fixed Sticky Sidebar (Always Visible) -->
+    <aside class="glass-sidebar">
+        <div class="mb-12 px-2">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-accentGreen rounded-xl flex items-center justify-center shadow-lg shadow-accentGreen/20">
+                    <i class="fa-solid fa-graduation-cap text-white text-xl"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xl font-bold text-white tracking-tight">Tradersfy</span>
+                    <span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Master Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-grow">
+            <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{% url 'admin_courses' %}" class="sidebar-link {% if 'course' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fa-solid fa-book"></i>
+                <span>Courses</span>
+            </a>
+            <a href="{% url 'admin_users' %}" class="sidebar-link {% if 'user' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fa-solid fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="{% url 'admin_transactions' %}" class="sidebar-link {% if 'transaction' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="{% url 'admin_analytics' %}" class="sidebar-link {% if 'analytics' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="{% url 'admin_testimonials' %}" class="sidebar-link {% if 'testimonial' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fa-solid fa-comments"></i>
+                <span>Testimonials</span>
+            </a>
+        </nav>
+
+        <div class="pt-6 border-t border-white/5">
+            <a href="{% url 'home' %}" class="sidebar-link">
+                <i class="fa-solid fa-house"></i>
+                <span>Back to Site</span>
+            </a>
+            <a href="{% url 'logout' %}" class="sidebar-link text-red-400 hover:bg-red-500/10">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+        {% if messages %}
+        <div class="mb-8 space-y-3">
+            {% for message in messages %}
+            <div class="p-4 rounded-2xl flex items-center gap-3 {% if message.tags == 'success' %}bg-green-500/10 text-green-400 border border-green-500/20{% else %}bg-red-500/10 text-red-400 border border-red-500/20{% endif %}">
+                <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+                <span class="text-sm font-medium">{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block admin_content %}
+        {% endblock %}
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Security & Anti-Piracy Measures
+    (function() {
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 's') || e.key === 'PrintScreen') {
+                e.preventDefault();
+                return false;
+            }
+        });
+        window.addEventListener('keyup', e => {
+            if (e.key === 'PrintScreen') {
+                navigator.clipboard.writeText('');
+                alert('Screenshots are disabled for security.');
+            }
+        });
+        window.addEventListener('blur', () => { document.body.style.filter = 'blur(10px)'; });
+        window.addEventListener('focus', () => { document.body.style.filter = 'none'; });
+    })();
+
+    // Drag and Drop Global Logic
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+        const input = zone.querySelector('input[type="file"]');
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+        ['dragleave', 'drop'].forEach(event => { zone.addEventListener(event, () => zone.classList.remove('drag-over')); });
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            if (e.dataTransfer.files.length) {
+                input.files = e.dataTransfer.files;
+                updateDropZoneLabel(zone, e.dataTransfer.files[0].name);
+            }
+        });
+        if (input) { input.addEventListener('change', () => { if (input.files.length) updateDropZoneLabel(zone, input.files[0].name); }); }
+    });
+    function updateDropZoneLabel(zone, filename) {
+        const label = zone.querySelector('p');
+        if (label) label.textContent = `Selected: ${filename}`;
+    }
+</script>
+{% endblock %}
