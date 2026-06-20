@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Dashboard - Tradersfy Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #050505; color: #E0E0E0; font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 193, 7, 0.1); border-radius: 20px; }
+        .sidebar { width: 280px; background-color: #0A0A0A; border-right: 1px solid #1a1a1a; }
+        .sidebar-item { display: flex; align-items: center; padding: 12px 24px; color: #666; transition: all 0.3s; border-radius: 12px; margin: 4px 16px; }
+        .sidebar-item:hover, .sidebar-item.active { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
+        .status-pill { padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .status-completed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .status-failed { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="sidebar flex flex-col h-full">
+        <div class="p-8">
+            <div class="text-2xl font-black tracking-tighter text-amber-400">
+                TRADERSFY <span class="text-xs text-gray-500 font-normal">ADMIN</span>
+            </div>
+        </div>
+        <nav class="flex-1 space-y-1">
+            <a href="{% url 'admin_dashboard' %}" class="sidebar-item"><i class="fa-solid fa-gauge-high mr-4"></i> Dashboard</a>
+            <a href="{% url 'admin_activity' %}" class="sidebar-item active"><i class="fa-solid fa-bolt mr-4"></i> Activity</a>
+            <a href="{% url 'admin_users' %}" class="sidebar-item"><i class="fa-solid fa-users mr-4"></i> Users</a>
+            <a href="{% url 'admin_transactions' %}" class="sidebar-item"><i class="fa-solid fa-credit-card mr-4"></i> Transactions</a>
+        </nav>
+        <div class="p-6 border-t border-zinc-900">
+            <a href="{% url 'home' %}" class="sidebar-item text-sm"><i class="fa-solid fa-arrow-left mr-4"></i> Back to Site</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-10">
+        <div class="mb-10">
+            <h1 class="text-4xl font-black text-white">Activity Monitoring</h1>
+            <p class="text-gray-500">Real-time tracking of user logins and financial transactions.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- User Logins -->
+            <div class="space-y-6">
+                <h3 class="text-xl font-bold flex items-center">
+                    <i class="fa-solid fa-right-to-bracket text-amber-400 mr-3"></i> Recent Logins
+                </h3>
+                <div class="glass-card overflow-hidden">
+                    <div class="max-h-[600px] overflow-y-auto p-2">
+                        <table class="w-full text-left">
+                            <thead class="text-xs text-gray-500 uppercase">
+                                <tr>
+                                    <th class="p-4">User</th>
+                                    <th class="p-4">Time</th>
+                                    <th class="p-4">IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-900">
+                                {% for login in logins %}
+                                <tr class="hover:bg-white/5 transition">
+                                    <td class="p-4">
+                                        <div class="font-bold text-white">{{ login.user.username }}</div>
+                                        <div class="text-[10px] text-gray-500">{{ login.user.email }}</div>
+                                    </td>
+                                    <td class="p-4 text-sm text-gray-400">
+                                        {{ login.login_at|timesince }} ago
+                                    </td>
+                                    <td class="p-4 font-mono text-xs text-amber-400/70">
+                                        {{ login.ip_address|default:"Unknown" }}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="3" class="p-10 text-center text-gray-600">No login history recorded yet.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions -->
+            <div class="space-y-6">
+                <h3 class="text-xl font-bold flex items-center">
+                    <i class="fa-solid fa-money-bill-transfer text-amber-400 mr-3"></i> Recent Transactions
+                </h3>
+                <div class="glass-card overflow-hidden">
+                    <div class="max-h-[600px] overflow-y-auto p-2">
+                        <table class="w-full text-left">
+                            <thead class="text-xs text-gray-500 uppercase">
+                                <tr>
+                                    <th class="p-4">Order</th>
+                                    <th class="p-4">Amount</th>
+                                    <th class="p-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-900">
+                                {% for tx in transactions %}
+                                <tr class="hover:bg-white/5 transition">
+                                    <td class="p-4">
+                                        <div class="font-bold text-white">{{ tx.order_id }}</div>
+                                        <div class="text-[10px] text-gray-500">{{ tx.user.username }}</div>
+                                    </td>
+                                    <td class="p-4">
+                                        <div class="font-bold text-white">₹{{ tx.total }}</div>
+                                        <div class="text-[10px] text-gray-500">{{ tx.created_at|date:"M d, Y" }}</div>
+                                    </td>
+                                    <td class="p-4">
+                                        <span class="status-pill status-{{ tx.status }}">
+                                            {{ tx.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="3" class="p-10 text-center text-gray-600">No transactions found.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>

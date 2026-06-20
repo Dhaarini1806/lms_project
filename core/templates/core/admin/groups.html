@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groups - Tradersfy Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #0A0A0A; color: #E0E0E0; font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(22, 22, 22, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 193, 7, 0.1); border-radius: 16px; }
+        .btn-amber { background: #ffc107; color: #000; font-weight: 700; padding: 10px 20px; border-radius: 10px; transition: all 0.3s; }
+        .btn-amber:hover { background: #ffb300; }
+    </style>
+</head>
+<body class="p-10">
+    <div class="max-w-5xl mx-auto">
+        <div class="flex items-center justify-between mb-12">
+            <div>
+                <h1 class="text-4xl font-black text-white">Groups</h1>
+                <p class="text-gray-500">Manage user groups and permissions.</p>
+            </div>
+            <div class="flex gap-4">
+                <a href="{% url 'admin_dashboard' %}" class="text-gray-400 hover:text-white self-center mr-4"><i class="fa-solid fa-gauge-high mr-2"></i> Dashboard</a>
+                <a href="{% url 'admin_add_group' %}" class="btn-amber">
+                    <i class="fa-solid fa-plus mr-2"></i> Add New Group
+                </a>
+            </div>
+        </div>
+
+        <div class="glass-card overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-[#111] border-b border-gray-800">
+                    <tr>
+                        <th class="p-6 text-gray-400 font-bold uppercase text-xs tracking-widest">Group Name</th>
+                        <th class="p-6 text-gray-400 font-bold uppercase text-xs tracking-widest">Users Count</th>
+                        <th class="p-6 text-gray-400 font-bold uppercase text-xs tracking-widest">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for group in groups %}
+                    <tr class="hover:bg-white/5 transition">
+                        <td class="p-6">
+                            <div class="font-bold text-amber-400">{{ group.name }}</div>
+                        </td>
+                        <td class="p-6">
+                            <span class="bg-blue-400/10 text-blue-400 px-3 py-1 rounded-full text-xs font-bold">{{ group.user_count }} Users</span>
+                        </td>
+                        <td class="p-6">
+                            <a href="#" class="text-gray-400 hover:text-white"><i class="fa-solid fa-pen-to-square"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="p-12 text-center text-gray-600">No groups found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

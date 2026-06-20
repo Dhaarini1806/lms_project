@@ -20,15 +20,25 @@
 
         <nav class="flex-1 overflow-y-auto py-4">
             <div class="px-6 mb-2">
+                <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Insights & Monitoring</h3>
+                <ul class="space-y-1">
+                    <li><a href="{% url 'admin_activity' %}" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
+                        <span class="group-hover:translate-x-1 transition-transform">Live Activity</span>
+                        <span class="text-amber-500 text-[10px] font-bold">LIVE</span>
+                    </a></li>
+                </ul>
+            </div>
+
+            <div class="px-6 mb-2">
                 <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Authentication & Auth</h3>
                 <ul class="space-y-1">
-                    <li><a href="#" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
+                    <li><a href="{% url 'admin_groups' %}" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
                         <span class="group-hover:translate-x-1 transition-transform">Groups</span>
-                        <span class="text-zinc-600">+ Add</span>
+                        <a href="{% url 'admin_add_group' %}" class="text-zinc-600 hover:text-amber-500">+ Add</a>
                     </a></li>
-                    <li><a href="#" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
+                    <li><a href="{% url 'admin_users' %}" class="flex items-center justify-between py-2 text-sm text-zinc-300 hover:text-white group">
                         <span class="group-hover:translate-x-1 transition-transform">Users</span>
-                        <span class="text-zinc-600">+ Add</span>
+                        <a href="{% url 'admin_add_user' %}" class="text-zinc-600 hover:text-amber-500">+ Add</a>
                     </a></li>
                 </ul>
             </div>

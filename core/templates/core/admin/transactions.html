@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - Tradersfy Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%); color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { background: linear-gradient(180deg, #1e1e2e 0%, #16213e 100%); border-right: 1px solid rgba(255, 193, 7, 0.1); }
+        .sidebar-item { display: flex; align-items: center; color: #b0b0b0; padding: 12px 20px; margin: 8px 12px; border-radius: 8px; cursor: pointer; transition: all 0.3s; width: calc(100% - 24px); }
+        .sidebar-item:hover, .sidebar-item.active { background: rgba(255, 193, 7, 0.15); color: #ffc107; border-left: 3px solid #ffc107; }
+        .nav-top { background: rgba(30, 30, 46, 0.9); border-bottom: 1px solid rgba(255, 193, 7, 0.1); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-primary { background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 193, 7, 0.3); }
+        .table-container { background: rgba(30, 30, 46, 0.8); border: 1px solid rgba(255, 193, 7, 0.1); border-radius: 12px; overflow: hidden; }
+        .table-row { border-bottom: 1px solid rgba(255, 193, 7, 0.05); padding: 15px 20px; display: grid !important; grid-template-columns: 1.2fr 1.5fr 1fr 1.2fr 1.5fr 1fr !important; gap: 15px; align-items: center; }
+        .table-row:hover { background: rgba(255, 193, 7, 0.05); }
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .status-completed { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
+        .status-pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .status-failed { background: rgba(244, 67, 54, 0.2); color: #f44336; }
+        .logo { font-size: 20px; font-weight: bold; color: #ffc107; }
+        .filter-btn { background: rgba(255, 193, 7, 0.1); color: #ffc107; padding: 8px 16px; border-radius: 6px; border: 1px solid rgba(255, 193, 7, 0.3); cursor: pointer; transition: all 0.3s; margin-right: 8px; }
+        .filter-btn.active, .filter-btn:hover { background: rgba(255, 193, 7, 0.2); }
+    </style>
+</head>
+<body>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 h-screen overflow-y-auto">
+            <div class="p-6 border-b border-amber-500/20">
+                <div class="logo"><i class="fas fa-chart-line text-amber-400 mr-2"></i>Traders<span class="text-gray-400">fy</span></div>
+                <p class="text-xs text-gray-500 mt-2">Admin Panel</p>
+            </div>
+            <nav class="mt-6">
+                <a href="{% url 'admin_dashboard' %}" class="sidebar-item"><i class="fas fa-home mr-3"></i>Dashboard</a>
+                <a href="{% url 'admin_courses' %}" class="sidebar-item"><i class="fas fa-book mr-3"></i>Courses</a>
+                <a href="{% url 'admin_users' %}" class="sidebar-item"><i class="fas fa-users mr-3"></i>Users</a>
+                <a href="{% url 'admin_transactions' %}" class="sidebar-item active"><i class="fas fa-credit-card mr-3"></i>Transactions</a>
+                <a href="{% url 'admin_analytics' %}" class="sidebar-item"><i class="fas fa-chart-bar mr-3"></i>Analytics</a>
+                <hr class="my-4 border-amber-500/10">
+                <a href="{% url 'home' %}" class="sidebar-item"><i class="fas fa-arrow-left mr-3"></i>Back to Site</a>
+                <a href="{% url 'logout' %}" class="sidebar-item"><i class="fas fa-sign-out-alt mr-3"></i>Logout</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Nav -->
+            <div class="nav-top">
+                <h1 class="text-2xl font-bold">Transactions</h1>
+                <a href="{% url 'admin_download_transactions_pdf' %}?status={{ status_filter }}" class="btn-primary"><i class="fas fa-download mr-2"></i>Download PDF</a>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto p-8">
+                <!-- Filters -->
+                <div class="mb-6 flex flex-wrap gap-2">
+                    <a href="{% url 'admin_transactions' %}" class="filter-btn {% if not status_filter %}active{% endif %}">All</a>
+                    <a href="?status=pending" class="filter-btn {% if status_filter == 'pending' %}active{% endif %}">Pending</a>
+                    <a href="?status=completed" class="filter-btn {% if status_filter == 'completed' %}active{% endif %}">Completed</a>
+                    <a href="?status=failed" class="filter-btn {% if status_filter == 'failed' %}active{% endif %}">Failed</a>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container">
+                    <div class="table-row font-semibold text-amber-400 bg-black/30">
+                        <div>Order ID</div>
+                        <div>User</div>
+                        <div>Amount</div>
+                        <div>Status</div>
+                        <div>Date</div>
+                        <div>Action</div>
+                    </div>
+                    {% for transaction in transactions %}
+                    <div class="table-row">
+                        <div class="font-mono text-sm">{{ transaction.order_id }}</div>
+                        <div>{{ transaction.user.username }}</div>
+                        <div class="font-semibold text-amber-400">₹{{ transaction.total }}</div>
+                        <div>
+                            <span class="status-badge status-{{ transaction.status }}">{{ transaction.status }}</span>
+                        </div>
+                        <div class="text-sm text-gray-400">{{ transaction.created_at|date:"M d, Y" }}</div>
+                        <div>
+                            <a href="{% url 'admin_transaction_detail' transaction.id %}" class="text-amber-400 hover:text-amber-300 text-sm"><i class="fas fa-eye mr-1"></i>View</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="table-row text-center text-gray-500">
+                        <div colspan="6">No transactions found</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

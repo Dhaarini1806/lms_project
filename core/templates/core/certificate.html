@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate - Tradersfy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%); color: #e0e0e0; }
+        .certificate-container { background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%); border: 3px solid rgba(255, 193, 7, 0.3); border-radius: 20px; padding: 60px 80px; text-align: center; position: relative; }
+        .certificate-container::before { content: ''; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 30px; height: 30px; background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); border-radius: 50%; }
+        .certificate-container::after { content: ''; position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); width: 30px; height: 30px; background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); border-radius: 50%; }
+        .cert-title { font-size: 48px; font-weight: bold; color: #ffc107; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        .cert-subtitle { font-size: 16px; color: #999; margin-bottom: 40px; }
+        .cert-text { font-size: 14px; color: #e0e0e0; margin-bottom: 20px; }
+        .student-name { font-size: 36px; font-weight: bold; color: #ffc107; margin: 40px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .course-name { font-size: 24px; color: #ffc107; margin: 30px 0; font-weight: 600; }
+        .cert-details { font-size: 12px; color: #999; margin-top: 40px; line-height: 1.8; }
+        .cert-details-item { display: inline-block; margin: 0 20px; }
+        .cert-number { font-weight: bold; color: #e0e0e0; }
+        .nav-bar { background: rgba(30, 30, 46, 0.9); border-bottom: 1px solid rgba(255, 193, 7, 0.1); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 20px; font-weight: bold; color: #ffc107; }
+        .btn-download { background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); color: #000; padding: 12px 30px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; margin: 20px 10px; }
+        .btn-download:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 193, 7, 0.3); }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-bar">
+        <div class="logo"><i class="fas fa-chart-line text-amber-400 mr-2"></i>Traders<span class="text-gray-400">fy</span></div>
+        <div class="flex gap-4">
+            <a href="{% url 'home' %}" class="text-gray-400 hover:text-amber-400 transition"><i class="fas fa-home mr-2"></i>Home</a>
+            <a href="{% url 'profile' %}" class="text-gray-400 hover:text-amber-400 transition"><i class="fas fa-user mr-2"></i>Profile</a>
+            <a href="{% url 'logout' %}" class="text-gray-400 hover:text-amber-400 transition"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+        </div>
+    </div>
+
+    <div class="min-h-screen p-8 flex items-center justify-center">
+        <div class="max-w-4xl w-full">
+            <!-- Certificate -->
+            <div class="certificate-container">
+                <div class="cert-title">Certificate of Completion</div>
+                <div class="cert-subtitle">This is to certify that</div>
+                
+                <div class="student-name">{{ user.username }}</div>
+                
+                <div class="cert-text">has successfully completed the course</div>
+                
+                <div class="course-name">{{ certificate.course.title }}</div>
+                
+                <div class="cert-text">
+                    and demonstrated proficiency in the subject matter covered in this course.
+                </div>
+                
+                <div class="cert-details">
+                    <div class="cert-details-item">
+                        <span class="cert-number">Certificate #{{ certificate.certificate_number }}</span>
+                    </div>
+                    <br>
+                    <div class="cert-details-item">
+                        Issued: {{ certificate.issue_date|date:"d F Y" }}
+                    </div>
+                    <div class="cert-details-item">
+                        Level: {{ certificate.course.level }}
+                    </div>
+                </div>
+                
+                <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255, 193, 7, 0.2); font-size: 12px; color: #999;">
+                    Tradersfy - Premium Learning Platform
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="{% url 'download_certificate_pdf' certificate.id %}" class="btn-download">
+                    <i class="fas fa-download"></i>Download Certificate PDF
+                </a>
+                <a href="{% url 'profile' %}" class="btn-download">
+                    <i class="fas fa-user"></i>Add to Profile
+                </a>
+            </div>
+
+            <!-- Navigation Links -->
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="{% url 'course_catalog' %}" class="text-amber-400 hover:text-amber-300 transition mr-20"><i class="fas fa-book mr-2"></i>Browse More Courses</a>
+                <a href="{% url 'profile' %}" class="text-amber-400 hover:text-amber-300 transition"><i class="fas fa-user mr-2"></i>View Profile</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

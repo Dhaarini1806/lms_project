@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 import uuid
 
 # ==========================================
@@ -29,7 +30,7 @@ class Profile(models.Model):
     state = models.CharField(max_length=100, default="Tamil Nadu", blank=True)
     city = models.CharField(max_length=100, default="Chennai", blank=True)
     street_address = models.TextField(default="Address", blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -87,7 +88,7 @@ class Course(models.Model):
     short_description = models.TextField(blank=True)
     description = models.TextField(blank=True)
     is_published = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -116,7 +117,7 @@ class Lesson(models.Model):
     video_url = models.URLField(max_length=500, help_text="Stream source URI")
     is_preview = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ['order']
@@ -175,7 +176,7 @@ class Order(models.Model):
     fees = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     is_completed = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     completed_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -195,7 +196,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         verbose_name_plural = "Order Items"
@@ -238,7 +239,7 @@ class OTPSession(models.Model):
     otp_code = models.CharField(max_length=6)
     is_verified = models.BooleanField(default=False)
     attempts = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     expires_at = models.DateTimeField()
 
     class Meta:
@@ -256,3 +257,23 @@ class OTPSession(models.Model):
     def is_valid_attempt(self):
         """Check if OTP session is still valid for attempts."""
         return not self.is_expired() and self.attempts < 3
+
+
+# ==========================================
+# 7. AUDIT & LOGGING
+# ==========================================
+class LoginHistory(models.Model):
+    """
+    Tracks user login events for security and analytics.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='login_history')
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(null=True, blank=True)
+    login_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        verbose_name_plural = "Login History"
+        ordering = ['-login_at']
+
+    def __str__(self):
+        return f"{self.user.username} logged in at {self.login_at}"

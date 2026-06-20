@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Tradersfy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body { background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%); color: #e0e0e0; }
+        .nav-bar { background: rgba(30, 30, 46, 0.9); border-bottom: 1px solid rgba(255, 193, 7, 0.1); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 20px; font-weight: bold; color: #ffc107; }
+        .checkout-container { display: grid; grid-template-columns: 1fr 400px; gap: 30px; max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .checkout-form { background: rgba(30, 30, 46, 0.8); border: 1px solid rgba(255, 193, 7, 0.1); border-radius: 16px; padding: 30px; }
+        .form-section { margin-bottom: 30px; }
+        .form-section-title { font-size: 18px; font-weight: bold; color: #ffc107; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600; }
+        .form-input { width: 100%; background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px 15px; color: #e0e0e0; font-size: 14px; transition: all 0.3s; }
+        .form-input:focus { outline: none; border-color: #ffc107; background: rgba(255, 193, 7, 0.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn-primary { background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); color: #000; padding: 14px 30px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s; width: 100%; font-size: 16px; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 193, 7, 0.3); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .order-summary { background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 16px; padding: 30px; height: fit-content; position: sticky; top: 20px; }
+        .summary-title { font-size: 18px; font-weight: bold; color: #ffc107; margin-bottom: 20px; }
+        .order-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255, 193, 7, 0.1); }
+        .order-item-name { color: #e0e0e0; }
+        .order-item-price { color: #ffc107; font-weight: 600; }
+        .summary-total { display: flex; justify-content: space-between; padding: 15px 0; font-size: 18px; font-weight: bold; color: #ffc107; border-top: 2px solid rgba(255, 193, 7, 0.3); margin-top: 15px; }
+        .otp-section { background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .otp-input { width: 100%; background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px 15px; color: #e0e0e0; font-size: 14px; text-align: center; letter-spacing: 5px; font-weight: bold; }
+        .otp-input:focus { outline: none; border-color: #ffc107; background: rgba(255, 193, 7, 0.1); }
+        .timer { color: #999; font-size: 12px; margin-top: 8px; }
+        .success-message { background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); border-radius: 8px; padding: 15px; color: #4caf50; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .error-message { background: rgba(244, 67, 54, 0.1); border: 1px solid rgba(244, 67, 54, 0.3); border-radius: 8px; padding: 15px; color: #f44336; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        @media (max-width: 768px) { .checkout-container { grid-template-columns: 1fr; } .order-summary { position: static; } }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-bar">
+        <div class="logo"><i class="fas fa-chart-line text-amber-400 mr-2"></i>Traders<span class="text-gray-400">fy</span></div>
+        <div class="flex gap-4">
+            <a href="{% url 'home' %}" class="text-gray-400 hover:text-amber-400 transition"><i class="fas fa-home mr-2"></i>Home</a>
+            <a href="{% url 'course_catalog' %}" class="text-gray-400 hover:text-amber-400 transition"><i class="fas fa-book mr-2"></i>Courses</a>
+            <a href="{% url 'view_cart' %}" class="text-gray-400 hover:text-amber-400 transition"><i class="fas fa-shopping-cart mr-2"></i>Cart</a>
+        </div>
+    </div>
+
+    <div class="checkout-container">
+        <!-- Checkout Form -->
+        <div class="checkout-form">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ message }}
+                    </div>
+                    {% else %}
+                    <div class="success-message">
+                        <i class="fas fa-check-circle"></i>
+                        {{ message }}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <form id="checkoutForm" method="POST">
+                {% csrf_token %}
+
+                <!-- Step 1: Authentication -->
+                {% if not user.is_authenticated %}
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-lock"></i>Step 1: Authentication
+                    </div>
+                    
+                    <div id="phoneSection">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" id="phoneNumber" name="phone_number" class="form-input" placeholder="Enter 10-digit phone number" maxlength="10" pattern="[0-9]{10}" required>
+                        </div>
+                        <button type="button" onclick="sendOTP()" class="btn-primary">
+                            <i class="fas fa-paper-plane mr-2"></i>Send OTP
+                        </button>
+                    </div>
+
+                    <div id="otpSection" style="display: none;">
+                        <div class="otp-section">
+                            <div class="form-label">Enter OTP</div>
+                            <input type="text" id="otpCode" name="otp_code" class="otp-input" placeholder="000000" maxlength="6" pattern="[0-9]{6}">
+                            <div class="timer">
+                                OTP expires in <span id="otpTimer">300</span> seconds
+                            </div>
+                        </div>
+                        <button type="button" onclick="verifyOTP()" class="btn-primary" style="margin-bottom: 10px;">
+                            <i class="fas fa-check mr-2"></i>Verify OTP
+                        </button>
+                        <button type="button" onclick="resendOTP()" class="btn-primary" style="background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3);">
+                            <i class="fas fa-redo mr-2"></i>Resend OTP
+                        </button>
+                    </div>
+                </div>
+                {% else %}
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-check-circle" style="color: #4caf50;"></i>Authenticated as {{ user.username }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Step 2: Billing Details -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-map-marker-alt"></i>Step 2: Billing Details
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="full_name" class="form-input" value="{{ user.username }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="email" class="form-input" value="{{ user.email }}" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">State</label>
+                            <input type="text" name="state" class="form-input" placeholder="Your state" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <input type="text" name="country" class="form-input" value="India" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">City</label>
+                        <input type="text" name="city" class="form-input" placeholder="Your city" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Street Address</label>
+                        <textarea name="street_address" class="form-input" rows="3" placeholder="Your street address" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-credit-card"></i>Step 3: Payment
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Payment Method</label>
+                        <select name="payment_method" class="form-input" required>
+                            <option value="razorpay">Razorpay (Credit/Debit Card, UPI, Wallet)</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+
+                    <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.1); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                        <div style="font-size: 12px; color: #999; margin-bottom: 10px;">
+                            <i class="fas fa-shield-alt mr-2"></i>Your payment is secure and encrypted
+                        </div>
+                        <div style="font-size: 12px; color: #999;">
+                            <i class="fas fa-check mr-2"></i>We accept all major payment methods
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="initiatePayment()" class="btn-primary" id="paymentBtn" style="margin-bottom: 10px;">
+                        <i class="fas fa-credit-card mr-2"></i>Pay via Razorpay
+                    </button>
+                    
+                    <div style="text-align: center; margin: 15px 0; color: #666; font-size: 12px; display: flex; items-center; gap: 10px;">
+                        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                        OR
+                        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                    </div>
+
+                    <button type="button" onclick="simulatePayment()" class="btn-primary" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white;">
+                        <i class="fas fa-flask mr-2"></i>Simulate Demo Payment
+                    </button>
+                </div>
+
+                <!-- Terms & Conditions -->
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="terms" required style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="font-size: 12px; color: #999;">I agree to the Terms & Conditions and Privacy Policy</span>
+                    </label>
+                </div>
+            </form>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <div class="summary-title"><i class="fas fa-receipt mr-2"></i>Order Summary</div>
+            
+            {% for item in cart_items %}
+            <div class="order-item">
+                <span class="order-item-name">{{ item.course.title }}</span>
+                <span class="order-item-price">₹{{ item.course.price }}</span>
+            </div>
+            {% endfor %}
+
+            <div class="order-item">
+                <span class="order-item-name">Subtotal</span>
+                <span class="order-item-price">₹{{ subtotal }}</span>
+            </div>
+
+            <div class="order-item">
+                <span class="order-item-name">GST (18%)</span>
+                <span class="order-item-price">₹{{ gst_estimate }}</span>
+            </div>
+
+            <div class="summary-total">
+                <span>Total Amount</span>
+                <span>₹{{ grand_total }}</span>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: rgba(76, 175, 80, 0.1); border-radius: 8px; border: 1px solid rgba(76, 175, 80, 0.2); color: #4caf50; font-size: 12px;">
+                <i class="fas fa-check-circle mr-2"></i>
+                Your courses will be instantly unlocked after payment
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function sendOTP() {
+            const phone = document.getElementById('phoneNumber').value;
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert('Please enter a valid 10-digit phone number');
+                return;
+            }
+
+            fetch('{% url "send_otp" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ phone_number: phone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('phoneSection').style.display = 'none';
+                    document.getElementById('otpSection').style.display = 'block';
+                    startOTPTimer();
+                } else {
+                    alert(data.message || 'Failed to send OTP');
+                }
+            });
+        }
+
+        function verifyOTP() {
+            const otp = document.getElementById('otpCode').value;
+            if (!/^[0-9]{6}$/.test(otp)) {
+                alert('Please enter a valid 6-digit OTP');
+                return;
+            }
+
+            fetch('{% url "verify_otp" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ otp_code: otp })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('OTP verified successfully!');
+                    location.reload();
+                } else {
+                    alert(data.message || 'Invalid OTP');
+                }
+            });
+        }
+
+        function resendOTP() {
+            sendOTP();
+        }
+
+        function startOTPTimer() {
+            let time = 300;
+            const timer = setInterval(() => {
+                time--;
+                document.getElementById('otpTimer').textContent = time;
+                if (time <= 0) clearInterval(timer);
+            }, 1000);
+        }
+
+        function initiatePayment() {
+            const form = document.getElementById('checkoutForm');
+            
+            // Explicitly check for required fields to provide better feedback
+            const requiredFields = form.querySelectorAll('[required]');
+            let allFilled = true;
+            requiredFields.forEach(field => {
+                if (!field.value.trim() || (field.type === 'checkbox' && !field.checked)) {
+                    allFilled = false;
+                    field.style.borderColor = '#f44336';
+                } else {
+                    field.style.borderColor = 'rgba(255, 193, 7, 0.2)';
+                }
+            });
+
+            if (!allFilled) {
+                alert('Please fill all required fields and agree to the terms.');
+                return;
+            }
+
+            // Create order and initiate Razorpay
+            fetch('{% url "checkout" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    full_name: form.full_name.value,
+                    email: form.email.value,
+                    state: form.state.value,
+                    country: form.country.value,
+                    street_address: form.street_address.value,
+                    city: form.city.value,
+                    payment_method: form.payment_method.value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.order_id) {
+                    const options = {
+                        key: data.razorpay_key,
+                        amount: data.amount,
+                        currency: 'INR',
+                        name: 'Tradersfy',
+                        description: 'Course Purchase',
+                        order_id: data.order_id,
+                        handler: function(response) {
+                            verifyPayment(response, data.order_id);
+                        },
+                        prefill: {
+                            name: form.full_name.value,
+                            email: form.email.value
+                        }
+                    };
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                } else {
+                    alert(data.message || 'Failed to create order');
+                }
+            });
+        }
+
+        function verifyPayment(response, orderId) {
+            fetch('{% url "verify_payment" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature,
+                    internal_order_id: orderId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = `{% url 'order_success' 0 %}`.replace('0', data.order_id);
+                } else {
+                    alert(data.message || 'Payment verification failed');
+                }
+            });
+        }
+
+        function simulatePayment() {
+            const form = document.getElementById('checkoutForm');
+            
+            // Basic validation for demo
+            if (!form.full_name.value || !form.email.value) {
+                alert('Please enter Name and Email for the demo.');
+                return;
+            }
+
+            if (confirm('DEMO MODE: This will simulate a successful payment and unlock your courses instantly. Proceed?')) {
+                // 1. Create the order first
+                fetch('{% url "checkout" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        full_name: form.full_name.value,
+                        email: form.email.value,
+                        state: form.state.value || 'Demo State',
+                        country: form.country.value || 'India',
+                        city: form.city.value || 'Demo City',
+                        street_address: form.street_address.value || 'Demo Address',
+                        payment_method: 'Demo Simulation'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.internal_order_id) {
+                        // 2. Immediately verify as success
+                        verifyPayment({
+                            razorpay_order_id: data.order_id,
+                            razorpay_payment_id: 'pay_demo_' + Math.random().toString(36).substr(2, 9),
+                            razorpay_signature: 'demo_sig_verified'
+                        }, data.internal_order_id);
+                    } else {
+                        alert('Simulation failed at order creation.');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

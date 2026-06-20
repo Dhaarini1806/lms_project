@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, Course, Lesson, CourseAccess, Order, OrderItem, Certificate
+from .models import Profile, Course, Lesson, CourseAccess, Order, OrderItem, Certificate, LoginHistory
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
@@ -32,3 +32,8 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(Certificate)
 class CertificateAdmin(admin.ModelAdmin):
     list_display = ('certificate_number', 'user', 'course', 'issue_date')
+
+@admin.register(LoginHistory)
+class LoginHistoryAdmin(admin.ModelAdmin):
+    list_display = ('user', 'login_at', 'ip_address')
+    list_filter = ('login_at',)

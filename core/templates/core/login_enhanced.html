@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in to your Tradersfy Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-[#0A0A0A] text-white flex items-center justify-center min-h-screen font-sans selection:bg-[#ffc107] selection:text-black">
+
+    {% csrf_token %}
+
+    <div class="w-full max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+        
+        <div class="space-y-4 hidden md:block">
+            <h1 class="text-5xl font-extrabold tracking-tight text-white leading-tight">
+                Log in to your <span class="text-amber-400">Tradersfy</span> Account
+            </h1>
+            <p class="text-gray-400 text-lg max-w-md">
+                Access your trading academy dashboard instantly via secure passwordless verification.
+            </p>
+            <div class="flex items-end gap-3 pt-8 h-48 opacity-20">
+                <div class="w-16 h-24 border border-gray-500 rounded-sm"></div>
+                <div class="w-16 h-44 border border-gray-500 rounded-sm"></div>
+                <div class="w-16 h-36 border border-gray-500 rounded-sm"></div>
+            </div>
+        </div>
+
+        <div class="flex justify-center md:justify-end">
+            <div class="w-full max-w-md p-8 bg-[#161616] rounded-2xl border border-gray-800/60 shadow-2xl">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-white">Log in</h2>
+                    <p class="text-sm text-gray-400 mt-1">Passwordless Verification</p>
+                </div>
+
+                <div id="errorMessageBanner" class="hidden mb-5 p-3 rounded-xl bg-[#2c1616] border border-[#522323] text-[#fca5a5] text-sm text-center">
+                    <span id="errorText">Network error while sending OTP.</span>
+                </div>
+
+                <div id="stateMobile" class="space-y-5">
+                    <div class="flex gap-3">
+                        <div class="relative">
+                            <select id="countryCode" class="appearance-none block w-24 h-14 rounded-xl border border-gray-700 bg-[#1c1e24] px-4 text-white text-sm font-medium focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition duration-150 cursor-pointer">
+                                <option value="+91" selected>IN +91</option>
+                                <option value="+1">US +1</option>
+                                <option value="+44">UK +44</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
+                        </div>
+                        
+                        <div class="relative flex-1">
+                            <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">
+                                <i class="fa-solid fa-phone"></i>
+                            </span>
+                            <input type="tel" id="mobileNumber" placeholder="**********" 
+                                   class="block w-full h-14 pl-12 pr-4 rounded-xl border border-gray-700 bg-[#1c1e24] text-white font-medium placeholder-gray-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition duration-150"
+                                   maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="sendOtpRequest()" 
+                            class="w-full h-14 bg-amber-400 hover:bg-amber-500 active:scale-[0.99] text-black font-bold text-base rounded-xl transition duration-150 tracking-wide shadow-lg shadow-amber-400/10">
+                        Send OTP via Mobile
+                    </button>
+                </div>
+
+                <div id="stateOtp" class="space-y-5 hidden">
+                    <div class="space-y-2">
+                        <input type="text" id="otpCode" placeholder="••••••" 
+                               class="block w-full h-14 tracking-[0.75em] text-center text-2xl font-bold rounded-xl border border-gray-700 bg-[#1c1e24] text-white placeholder-gray-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition duration-150"
+                               maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <p class="text-xs text-gray-500 text-center">Development Sandbox Token fallback: <span class="text-amber-400 font-mono font-bold">123456</span></p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <button type="button" onclick="verifyOtpRequest()" 
+                                class="w-full h-14 bg-emerald-500 hover:bg-emerald-600 text-black font-bold text-base rounded-xl transition duration-150 tracking-wide shadow-lg">
+                            Verify & Proceed
+                        </button>
+                        
+                        <button type="button" onclick="goBackToMobile()" 
+                                class="w-full text-center text-sm font-semibold text-gray-400 hover:text-white transition duration-150 py-1">
+                            Modify Phone Number
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function showAlert(message) {
+            const banner = document.getElementById('errorMessageBanner');
+            const txt = document.getElementById('errorText');
+            txt.textContent = message;
+            banner.classList.remove('hidden');
+        }
+
+        function hideAlert() {
+            document.getElementById('errorMessageBanner').classList.add('hidden');
+        }
+
+        function goBackToMobile() {
+            hideAlert();
+            document.getElementById('stateOtp').classList.add('hidden');
+            document.getElementById('stateMobile').classList.remove('hidden');
+        }
+
+        function sendOtpRequest() {
+            hideAlert();
+            const mobileInput = document.getElementById('mobileNumber').value.trim();
+            if (!mobileInput || mobileInput.length < 10) {
+                showAlert('Please match requested format: A valid 10-digit number.');
+                return;
+            }
+
+            const fullMobile = mobileInput; // The backend expects 10 digits
+            
+            fetch('/api/auth/send-otp/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ phone: fullMobile })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('stateMobile').classList.add('hidden');
+                    document.getElementById('stateOtp').classList.remove('hidden');
+                } else {
+                    showAlert(data.message || 'Failed to dispatch secure OTP verification token.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showAlert('Network error while sending OTP.');
+            });
+        }
+
+        function verifyOtpRequest() {
+            hideAlert();
+            const otp = document.getElementById('otpCode').value.trim();
+            const mobileInput = document.getElementById('mobileNumber').value.trim();
+            const fullMobile = mobileInput;
+
+            if (otp.length !== 6) {
+                showAlert('Verification failure: OTP must contain exactly 6 digits.');
+                return;
+            }
+
+            fetch('/api/auth/verify-otp/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ otp: otp, phone: fullMobile })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.href = data.redirect_url;
+                } else {
+                    showAlert(data.message || "The secure context rejected the provided key.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showAlert('Network verification communication breakdown.');
+            });
+        }
+    </script>
+</body>
+</html>

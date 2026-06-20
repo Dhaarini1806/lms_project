@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Details - Tradersfy Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%); color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { background: linear-gradient(180deg, #1e1e2e 0%, #16213e 100%); border-right: 1px solid rgba(255, 193, 7, 0.1); }
+        .sidebar-item { color: #b0b0b0; padding: 12px 20px; margin: 8px 12px; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .sidebar-item:hover, .sidebar-item.active { background: rgba(255, 193, 7, 0.15); color: #ffc107; border-left: 3px solid #ffc107; }
+        .nav-top { background: rgba(30, 30, 46, 0.9); border-bottom: 1px solid rgba(255, 193, 7, 0.1); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .info-card { background: rgba(30, 30, 46, 0.8); border: 1px solid rgba(255, 193, 7, 0.1); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .info-title { font-size: 16px; font-weight: bold; color: #ffc107; margin-bottom: 15px; }
+        .info-row { display: grid; grid-template-columns: 200px 1fr; gap: 15px; padding: 10px 0; border-bottom: 1px solid rgba(255, 193, 7, 0.05); }
+        .info-label { color: #999; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-value { color: #e0e0e0; }
+        .logo { font-size: 20px; font-weight: bold; color: #ffc107; }
+        .table-container { background: rgba(30, 30, 46, 0.8); border: 1px solid rgba(255, 193, 7, 0.1); border-radius: 12px; overflow: hidden; }
+        .table-row { border-bottom: 1px solid rgba(255, 193, 7, 0.05); padding: 15px 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; align-items: center; }
+        .table-row:hover { background: rgba(255, 193, 7, 0.05); }
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .status-completed { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
+        .status-pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 h-screen overflow-y-auto">
+            <div class="p-6 border-b border-amber-500/20">
+                <div class="logo"><i class="fas fa-chart-line text-amber-400 mr-2"></i>Traders<span class="text-gray-400">fy</span></div>
+                <p class="text-xs text-gray-500 mt-2">Admin Panel</p>
+            </div>
+            <nav class="mt-6">
+                <a href="{% url 'admin_dashboard' %}" class="sidebar-item"><i class="fas fa-home mr-3"></i>Dashboard</a>
+                <a href="{% url 'admin_courses' %}" class="sidebar-item"><i class="fas fa-book mr-3"></i>Courses</a>
+                <a href="{% url 'admin_users' %}" class="sidebar-item"><i class="fas fa-users mr-3"></i>Users</a>
+                <a href="{% url 'admin_transactions' %}" class="sidebar-item active"><i class="fas fa-credit-card mr-3"></i>Transactions</a>
+                <a href="{% url 'admin_analytics' %}" class="sidebar-item"><i class="fas fa-chart-bar mr-3"></i>Analytics</a>
+                <hr class="my-4 border-amber-500/10">
+                <a href="{% url 'home' %}" class="sidebar-item"><i class="fas fa-arrow-left mr-3"></i>Back to Site</a>
+                <a href="{% url 'logout' %}" class="sidebar-item"><i class="fas fa-sign-out-alt mr-3"></i>Logout</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Nav -->
+            <div class="nav-top">
+                <h1 class="text-2xl font-bold">Transaction Details</h1>
+                <a href="{% url 'admin_transactions' %}" class="text-amber-400 hover:text-amber-300"><i class="fas fa-arrow-left mr-2"></i>Back</a>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto p-8">
+                <!-- Transaction Info -->
+                <div class="info-card">
+                    <div class="info-title"><i class="fas fa-receipt mr-2"></i>Transaction Information</div>
+                    <div class="info-row">
+                        <div class="info-label">Order ID</div>
+                        <div class="info-value font-mono">{{ order.order_id }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Customer</div>
+                        <div class="info-value">{{ order.user.username }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ order.user.email }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Status</div>
+                        <div class="info-value">
+                            <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Payment Method</div>
+                        <div class="info-value">{{ order.payment_method }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Order Date</div>
+                        <div class="info-value">{{ order.created_at|date:"d F Y H:i" }}</div>
+                    </div>
+                </div>
+
+                <!-- Billing Info -->
+                <div class="info-card">
+                    <div class="info-title"><i class="fas fa-map-marker-alt mr-2"></i>Billing Information</div>
+                    <div class="info-row">
+                        <div class="info-label">State</div>
+                        <div class="info-value">{{ order.state_union_territory }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Country</div>
+                        <div class="info-value">{{ order.country }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Street Address</div>
+                        <div class="info-value">{{ order.street_address }}</div>
+                    </div>
+                </div>
+
+                <!-- Payment Info -->
+                <div class="info-card">
+                    <div class="info-title"><i class="fas fa-credit-card mr-2"></i>Payment Information</div>
+                    <div class="info-row">
+                        <div class="info-label">Razorpay Order ID</div>
+                        <div class="info-value font-mono text-sm">{{ order.razorpay_order_id|default:"N/A" }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Razorpay Payment ID</div>
+                        <div class="info-value font-mono text-sm">{{ order.razorpay_payment_id|default:"N/A" }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Razorpay Signature</div>
+                        <div class="info-value font-mono text-sm">{{ order.razorpay_signature|default:"N/A" }}</div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="info-card">
+                    <div class="info-title"><i class="fas fa-shopping-cart mr-2"></i>Order Items</div>
+                    <div class="table-container">
+                        <div class="table-row font-semibold text-amber-400 bg-black/30">
+                            <div>Course</div>
+                            <div>Price</div>
+                            <div>Status</div>
+                        </div>
+                        {% for item in items %}
+                        <div class="table-row">
+                            <div>{{ item.course.title }}</div>
+                            <div>₹{{ item.price }}</div>
+                            <div><span class="status-badge status-completed">Delivered</span></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Amount Summary -->
+                <div class="info-card">
+                    <div class="info-title"><i class="fas fa-calculator mr-2"></i>Amount Summary</div>
+                    <div class="info-row">
+                        <div class="info-label">Subtotal</div>
+                        <div class="info-value">₹{{ order.original_price }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">GST (18%)</div>
+                        <div class="info-value">₹{{ order.tax }}</div>
+                    </div>
+                    <div class="info-row" style="border-bottom: 2px solid rgba(255, 193, 7, 0.2); font-size: 16px; font-weight: bold;">
+                        <div class="info-label">Total Amount</div>
+                        <div class="info-value" style="color: #ffc107;">₹{{ order.total }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
