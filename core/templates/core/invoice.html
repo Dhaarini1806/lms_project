@@ -3,164 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice - Tradersfy</title>
+    <title>Invoice {{ order.order_id }} - Tradersfy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%); color: #e0e0e0; }
-        .invoice-container { background: linear-gradient(135deg, rgba(255, 193, 7, 0.05) 0%, rgba(255, 193, 7, 0.02) 100%); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 16px; }
-        .invoice-header { background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); color: #000; padding: 40px; border-radius: 16px 16px 0 0; }
-        .invoice-title { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
-        .invoice-number { font-size: 18px; opacity: 0.8; }
-        .invoice-body { padding: 40px; }
-        .section-title { font-size: 14px; color: #ffc107; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; margin-top: 30px; }
-        .section-title:first-child { margin-top: 0; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .info-item { }
-        .info-label { font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-        .info-value { font-size: 16px; color: #e0e0e0; font-weight: 500; }
-        .items-table { width: 100%; border-collapse: collapse; margin: 30px 0; }
-        .items-table th { background: rgba(255, 193, 7, 0.15); color: #ffc107; padding: 15px; text-align: left; font-weight: bold; border-bottom: 2px solid rgba(255, 193, 7, 0.3); }
-        .items-table td { padding: 15px; border-bottom: 1px solid rgba(255, 193, 7, 0.1); }
-        .items-table tr:hover { background: rgba(255, 193, 7, 0.05); }
-        .summary-section { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; }
-        .summary-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255, 193, 7, 0.1); }
-        .summary-label { color: #999; }
-        .summary-value { color: #e0e0e0; font-weight: 500; }
-        .summary-total { display: flex; justify-content: space-between; padding: 15px 0; font-size: 20px; font-weight: bold; color: #ffc107; border-top: 2px solid rgba(255, 193, 7, 0.3); margin-top: 15px; }
-        .btn-download { background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); color: #000; padding: 12px 30px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; }
-        .btn-download:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255, 193, 7, 0.3); }
-        .nav-bar { background: rgba(30, 30, 46, 0.9); border-bottom: 1px solid rgba(255, 193, 7, 0.1); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 20px; font-weight: bold; color: #ffc107; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        * { box-sizing: border-box; }
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .nav-bar {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-links a {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            margin-left: 20px;
+            transition: color 0.15s;
+        }
+        .nav-links a:hover { color: #059669; }
+
+        .invoice-wrapper { max-width: 860px; margin: 40px auto; padding: 0 24px 60px; }
+
+        /* ── Invoice card ── */
+        .invoice-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(15,23,42,.07);
+        }
+
+        /* ── Top brand strip ── */
+        .invoice-header {
+            background: linear-gradient(135deg, #059669 0%, #00AEEF 100%);
+            color: #ffffff;
+            padding: 36px 44px;
+        }
+        .invoice-brand { font-size: 28px; font-weight: 900; letter-spacing: 2px; }
+        .invoice-number { font-size: 15px; opacity: 0.85; margin-top: 6px; font-weight: 500; }
+
+        /* ── Body ── */
+        .invoice-body { padding: 40px 44px; }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #059669;
+            margin-bottom: 14px;
+            margin-top: 28px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .section-label:first-child { margin-top: 0; }
+
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 40px; margin-bottom: 8px; }
+        @media (max-width: 560px) { .info-grid { grid-template-columns: 1fr; } }
+        .info-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 4px; }
+        .info-value { font-size: 15px; font-weight: 500; color: #1e293b; }
+
+        /* ── Items table ── */
+        .items-table { width: 100%; border-collapse: collapse; margin: 16px 0 4px; }
+        .items-table thead tr { background: #f1f5f9; }
+        .items-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .items-table td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #1e293b;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .items-table tbody tr:hover { background: #fafafa; }
+        .items-table tbody tr:last-child td { border-bottom: none; }
+
+        /* ── Summary ── */
+        .summary-section { display: flex; justify-content: flex-end; margin-top: 20px; }
+        .summary-box { width: 300px; }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 0;
+            font-size: 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #64748b;
+        }
+        .summary-row span:last-child { font-weight: 600; color: #1e293b; }
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0 6px;
+            font-size: 18px;
+            font-weight: 800;
+            color: #059669;
+        }
+
+        /* ── Status badge ── */
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
+        .status-completed { color: #059669; }
+        .status-pending   { color: #d97706; }
+        .status-failed    { color: #ef4444; }
+
+        /* ── Footer note ── */
+        .invoice-footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        /* ── Action strip ── */
+        .action-strip { margin-top: 28px; display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+        .btn-download {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: #ffffff;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(5,150,105,0.2);
+        }
+        .btn-download:hover { filter: brightness(1.06); transform: translateY(-1px); }
+        .btn-link {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            transition: all 0.15s;
+        }
+        .btn-link:hover { background: #f1f5f9; color: #1e293b; }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
+
+    <!-- ── Navigation ── -->
     <div class="nav-bar">
-        <div class="logo"><i class="fas fa-chart-line text-amber-400 mr-2"></i>Traders<span class="text-gray-400">fy</span></div>
-        <div class="flex gap-4">
-            <a href="{% url 'home' %}" class="text-gray-400 hover:text-amber-400 transition"><i class="fas fa-home mr-2"></i>Home</a>
-            <a href="{% url 'profile' %}" class="text-gray-400 hover:text-amber-400 transition"><i class="fas fa-user mr-2"></i>Profile</a>
-            <a href="{% url 'logout' %}" class="text-gray-400 hover:text-amber-400 transition"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+        <div style="font-size:18px; font-weight:800; color:#1e293b; display:flex; align-items:center; gap:8px;">
+            <div style="background:#059669; width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                <i class="fas fa-chart-line" style="color:#fff; font-size:12px;"></i>
+            </div>
+            Traders<span style="color:#059669;">fy</span>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'home' %}"><i class="fas fa-home mr-1"></i>Home</a>
+            <a href="{% url 'profile' %}"><i class="fas fa-user mr-1"></i>Profile</a>
+            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
         </div>
     </div>
 
-    <div class="min-h-screen p-8">
-        <div class="max-w-4xl mx-auto">
-            <!-- Invoice Container -->
-            <div class="invoice-container">
-                <!-- Header -->
-                <div class="invoice-header">
-                    <div class="invoice-title">TRADERSFY</div>
-                    <div class="invoice-number">Invoice {{ order.order_id }}</div>
-                </div>
+    <div class="invoice-wrapper">
+        <div class="invoice-card">
 
-                <!-- Body -->
-                <div class="invoice-body">
-                    <!-- Invoice Details -->
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">Invoice Date</div>
-                            <div class="info-value">{{ order.created_at|date:"d F Y" }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Order Status</div>
-                            <div class="info-value">
-                                {% if order.status == 'completed' %}
-                                    <span class="text-green-400"><i class="fas fa-check-circle mr-2"></i>Completed</span>
-                                {% elif order.status == 'pending' %}
-                                    <span class="text-yellow-400"><i class="fas fa-clock mr-2"></i>Pending</span>
-                                {% else %}
-                                    <span class="text-red-400"><i class="fas fa-times-circle mr-2"></i>{{ order.status|upper }}</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bill To -->
-                    <div class="section-title">Bill To</div>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">Customer</div>
-                            <div class="info-value">{{ order.user.username }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Email</div>
-                            <div class="info-value">{{ order.user.email }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">State</div>
-                            <div class="info-value">{{ order.state_union_territory }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Country</div>
-                            <div class="info-value">{{ order.country }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Items -->
-                    <div class="section-title">Purchased Courses</div>
-                    <table class="items-table">
-                        <thead>
-                            <tr>
-                                <th>Course</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in items %}
-                            <tr>
-                                <td>{{ item.course.title }}</td>
-                                <td>₹{{ item.price }}</td>
-                                <td>1</td>
-                                <td>₹{{ item.price }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-
-                    <!-- Summary -->
-                    <div class="summary-section">
-                        <div></div>
-                        <div>
-                            <div class="summary-item">
-                                <span class="summary-label">Subtotal</span>
-                                <span class="summary-value">₹{{ order.original_price }}</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">GST (18%)</span>
-                                <span class="summary-value">₹{{ order.tax }}</span>
-                            </div>
-                            <div class="summary-total">
-                                <span>Total Amount</span>
-                                <span>₹{{ order.total }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Footer -->
-                    <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255, 193, 7, 0.1); text-align: center; color: #999; font-size: 14px;">
-                        <p>Thank you for your purchase! Your courses are now unlocked and ready to access.</p>
-                        <p style="margin-top: 10px; font-size: 12px;">Tradersfy - Premium Learning Platform</p>
-                    </div>
-
-                    <!-- Download Button -->
-                    <div style="margin-top: 40px; text-align: center;">
-                        <a href="{% url 'download_invoice_pdf' order.id %}" class="btn-download">
-                            <i class="fas fa-download"></i>Download Invoice PDF
-                        </a>
-                    </div>
-                </div>
+            <!-- ── Brand header ── -->
+            <div class="invoice-header">
+                <div class="invoice-brand">TRADERSFY</div>
+                <div class="invoice-number">Invoice #{{ order.order_id }}</div>
             </div>
 
-            <!-- Action Links -->
-            <div style="margin-top: 40px; text-align: center;">
-                <a href="{% url 'course_catalog' %}" class="text-amber-400 hover:text-amber-300 transition mr-20"><i class="fas fa-book mr-2"></i>Browse Courses</a>
-                <a href="{% url 'profile' %}" class="text-amber-400 hover:text-amber-300 transition"><i class="fas fa-user mr-2"></i>Go to Profile</a>
-            </div>
+            <!-- ── Body ── -->
+            <div class="invoice-body">
+
+                <!-- Meta row -->
+                <div class="info-grid" style="margin-bottom:0;">
+                    <div>
+                        <div class="info-label">Invoice Date</div>
+                        <div class="info-value">{{ order.created_at|date:"d F Y" }}</div>
+                    </div>
+                    <div>
+                        <div class="info-label">Order Status</div>
+                        <div class="info-value">
+                            {% if order.status == 'completed' %}
+                                <span class="status-badge status-completed"><i class="fas fa-check-circle"></i>Completed</span>
+                            {% elif order.status == 'pending' %}
+                                <span class="status-badge status-pending"><i class="fas fa-clock"></i>Pending</span>
+                            {% else %}
+                                <span class="status-badge status-failed"><i class="fas fa-times-circle"></i>{{ order.status|upper }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bill To -->
+                <div class="section-label">Bill To</div>
+                <div class="info-grid">
+                    <div>
+                        <div class="info-label">Customer</div>
+                        <div class="info-value">{{ order.user.username }}</div>
+                    </div>
+                    <div>
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ order.user.email }}</div>
+                    </div>
+                    <div>
+                        <div class="info-label">State</div>
+                        <div class="info-value">{{ order.state_union_territory|default:"—" }}</div>
+                    </div>
+                    <div>
+                        <div class="info-label">Country</div>
+                        <div class="info-value">{{ order.country|default:"India" }}</div>
+                    </div>
+                </div>
+
+                <!-- Items -->
+                <div class="section-label">Purchased Courses</div>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th style="text-align:right;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td style="font-weight:600;">{{ item.course.title }}</td>
+                            <td>₹{{ item.price }}</td>
+                            <td>1</td>
+                            <td style="text-align:right; font-weight:700;">₹{{ item.price }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Summary -->
+                <div class="summary-section">
+                    <div class="summary-box">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>₹{{ order.original_price }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>GST (18%)</span>
+                            <span>₹{{ order.tax }}</span>
+                        </div>
+                        <div class="summary-total">
+                            <span>Total Amount</span>
+                            <span>₹{{ order.total }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer note -->
+                <div class="invoice-footer">
+                    <p>Thank you for your purchase! Your courses are now unlocked and ready to access.</p>
+                    <p style="margin-top:6px; font-size:11px;">Tradersfy — Premium Trading Education Platform</p>
+                </div>
+
+            </div><!-- end invoice-body -->
+        </div><!-- end invoice-card -->
+
+        <!-- ── Actions ── -->
+        <div class="action-strip">
+            <a href="{% url 'download_invoice_pdf' order.id %}" class="btn-download">
+                <i class="fas fa-download"></i> Download PDF
+            </a>
+            <a href="{% url 'course_catalog' %}" class="btn-link">
+                <i class="fas fa-book"></i> Browse Courses
+            </a>
+            <a href="{% url 'profile' %}" class="btn-link">
+                <i class="fas fa-user"></i> My Profile
+            </a>
         </div>
-    </div>
+
+    </div><!-- end invoice-wrapper -->
 </body>
 </html>

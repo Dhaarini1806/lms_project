@@ -1,113 +1,97 @@
 {% extends 'core/admin/admin_base.html' %}
 {% load static %}
-
 {% block title %}Transaction Details - Tradersfy Admin{% endblock %}
 
 {% block admin_extra_css %}
 <style>
-    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-    .status-completed { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
-    .status-pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
-    .status-failed { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .status-badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:600; text-transform:uppercase; }
+    .status-completed { background:rgba(5,150,105,0.08);  color:#059669; border:1px solid rgba(5,150,105,0.15); }
+    .status-pending   { background:rgba(217,119,6,0.08);  color:#d97706; border:1px solid rgba(217,119,6,0.15); }
+    .status-failed    { background:rgba(239,68,68,0.08);   color:#ef4444; border:1px solid rgba(239,68,68,0.15); }
 </style>
 {% endblock %}
 
 {% block admin_content %}
 <div class="flex items-center justify-between mb-8">
-    <h1 class="text-3xl font-black text-white">Transaction Details</h1>
-    <a href="{% url 'admin_transactions' %}" class="glass hover:bg-white/5 text-white font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2 transition">
-        <i class="fa-solid fa-arrow-left"></i> Back to Transactions
-    </a>
+    <h1 class="text-3xl font-black" style="color:#1e293b;">Transaction Details</h1>
+    <div class="flex items-center gap-3">
+        <a href="{% url 'admin_download_invoice_pdf' order.id %}"
+           class="font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2 shadow-sm transition"
+           style="background:#059669; color:#ffffff;"
+           onmouseover="this.style.background='#047857';" onmouseout="this.style.background='#059669';">
+            <i class="fa-solid fa-file-pdf"></i> Download Invoice
+        </a>
+        <a href="{% url 'admin_transactions' %}"
+           class="glass font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2 transition"
+           style="color:#1e293b;"
+           onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='';">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </a>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <div class="lg:col-span-2">
+    <div class="lg:col-span-2 space-y-6">
+
         <!-- Transaction Info -->
-        <div class="glass p-8 rounded-2xl mb-6">
-            <h3 class="text-xl font-black text-white mb-4"><i class="fa-solid fa-receipt mr-2"></i>Transaction Information</h3>
-            <div class="space-y-4">
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Order ID</div>
-                    <div class="text-white font-mono text-sm">{{ order.order_id }}</div>
+        <div class="glass p-8 rounded-2xl">
+            <h3 class="text-xl font-black mb-5 flex items-center gap-2" style="color:#1e293b;">
+                <i class="fa-solid fa-receipt" style="color:#d97706;"></i> Transaction Information
+            </h3>
+            <div class="space-y-2">
+                <div class="grid grid-cols-2 text-sm py-2.5" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">Order ID</div><div class="font-mono font-medium" style="color:#1e293b;">{{ order.order_id }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2.5" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">Customer</div><div class="font-medium" style="color:#1e293b;">{{ order.user.username }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2.5" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">Email</div><div class="font-medium" style="color:#1e293b;">{{ order.user.email }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2.5" style="border-bottom:1px solid #f1f5f9;">
+                    <div style="color:#64748b;">Status</div>
+                    <div><span class="status-badge status-{{ order.status }}">{{ order.status }}</span></div>
                 </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Customer</div>
-                    <div class="text-white font-medium">{{ order.user.username }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Email</div>
-                    <div class="text-white font-medium">{{ order.user.email }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Status</div>
-                    <div class="text-white font-medium">
-                        <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Payment Method</div>
-                    <div class="text-white font-medium">{{ order.payment_method }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Order Date</div>
-                    <div class="text-white font-medium">{{ order.created_at|date:"d F Y H:i" }}</div>
-                </div>
+                <div class="grid grid-cols-2 text-sm py-2.5" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">Payment Method</div><div class="font-medium" style="color:#1e293b;">{{ order.payment_method }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2.5"><div style="color:#64748b;">Order Date</div><div class="font-medium" style="color:#1e293b;">{{ order.created_at|date:"d F Y H:i" }}</div></div>
             </div>
         </div>
 
         <!-- Billing Info -->
-        <div class="glass p-8 rounded-2xl mb-6">
-            <h3 class="text-xl font-black text-white mb-4"><i class="fa-solid fa-map-marker-alt mr-2"></i>Billing Information</h3>
-            <div class="space-y-4">
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">State</div>
-                    <div class="text-white font-medium">{{ order.state_union_territory }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Country</div>
-                    <div class="text-white font-medium">{{ order.country }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Street Address</div>
-                    <div class="text-white font-medium">{{ order.street_address }}</div>
-                </div>
+        <div class="glass p-8 rounded-2xl">
+            <h3 class="text-xl font-black mb-5 flex items-center gap-2" style="color:#1e293b;">
+                <i class="fa-solid fa-map-marker-alt" style="color:#3b82f6;"></i> Billing Information
+            </h3>
+            <div class="space-y-2">
+                <div class="grid grid-cols-2 text-sm py-2.5" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">State</div><div class="font-medium" style="color:#1e293b;">{{ order.state_union_territory }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2.5" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">Country</div><div class="font-medium" style="color:#1e293b;">{{ order.country }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2.5"><div style="color:#64748b;">Street Address</div><div class="font-medium" style="color:#1e293b;">{{ order.street_address }}</div></div>
             </div>
         </div>
 
         <!-- Payment Info -->
-        <div class="glass p-8 rounded-2xl mb-6">
-            <h3 class="text-xl font-black text-white mb-4"><i class="fa-solid fa-credit-card mr-2"></i>Payment Information</h3>
-            <div class="space-y-4">
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Razorpay Order ID</div>
-                    <div class="text-white font-mono text-sm">{{ order.razorpay_order_id|default:"N/A" }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Razorpay Payment ID</div>
-                    <div class="text-white font-mono text-sm">{{ order.razorpay_payment_id|default:"N/A" }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Razorpay Signature</div>
-                    <div class="text-white font-mono text-sm">{{ order.razorpay_signature|default:"N/A" }}</div>
-                </div>
+        <div class="glass p-8 rounded-2xl">
+            <h3 class="text-xl font-black mb-5 flex items-center gap-2" style="color:#1e293b;">
+                <i class="fa-solid fa-credit-card" style="color:#8b5cf6;"></i> Payment Information
+            </h3>
+            <div class="space-y-2">
+                <div class="grid grid-cols-2 text-sm py-2.5" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">Razorpay Order ID</div><div class="font-mono" style="color:#1e293b;">{{ order.razorpay_order_id|default:"N/A" }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2.5" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">Razorpay Payment ID</div><div class="font-mono" style="color:#1e293b;">{{ order.razorpay_payment_id|default:"N/A" }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2.5"><div style="color:#64748b;">Razorpay Signature</div><div class="font-mono text-xs break-all" style="color:#1e293b;">{{ order.razorpay_signature|default:"N/A" }}</div></div>
             </div>
         </div>
     </div>
 
-    <div class="lg:col-span-1">
+    <div class="lg:col-span-1 space-y-6">
+
         <!-- Order Items -->
-        <div class="glass p-8 rounded-2xl mb-6">
-            <h3 class="text-xl font-black text-white mb-4"><i class="fa-solid fa-shopping-cart mr-2"></i>Order Items</h3>
-            <div class="divide-y divide-borderGray">
-                <div class="grid grid-cols-3 gap-4 py-3 px-2 font-semibold text-amber-400 bg-white/5 rounded-t-lg">
-                    <div>Course</div>
-                    <div>Price</div>
-                    <div>Status</div>
+        <div class="glass p-8 rounded-2xl">
+            <h3 class="text-xl font-black mb-5 flex items-center gap-2" style="color:#1e293b;">
+                <i class="fa-solid fa-shopping-cart" style="color:#059669;"></i> Order Items
+            </h3>
+            <div>
+                <div class="grid grid-cols-3 gap-3 py-3 px-2 text-xs font-bold rounded-t-lg mb-1" style="background:#f1f5f9; color:#d97706;">
+                    <div>Course</div><div>Price</div><div>Status</div>
                 </div>
                 {% for item in items %}
-                <div class="grid grid-cols-3 gap-4 py-3 px-2 hover:bg-white/[0.02] transition">
-                    <div class="text-white text-sm">{{ item.course.title }}</div>
-                    <div class="text-white text-sm">₹{{ item.price }}</div>
+                <div class="grid grid-cols-3 gap-3 py-3 px-2 text-sm transition" style="border-bottom:1px solid #f1f5f9;"
+                     onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='';">
+                    <div style="color:#1e293b;">{{ item.course.title }}</div>
+                    <div style="color:#1e293b;">₹{{ item.price }}</div>
                     <div><span class="status-badge status-completed">Delivered</span></div>
                 </div>
                 {% endfor %}
@@ -116,22 +100,25 @@
 
         <!-- Amount Summary -->
         <div class="glass p-8 rounded-2xl">
-            <h3 class="text-xl font-black text-white mb-4"><i class="fa-solid fa-calculator mr-2"></i>Amount Summary</h3>
-            <div class="space-y-4">
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Subtotal</div>
-                    <div class="text-white font-medium">₹{{ order.original_price }}</div>
+            <h3 class="text-xl font-black mb-5 flex items-center gap-2" style="color:#1e293b;">
+                <i class="fa-solid fa-calculator" style="color:#d97706;"></i> Amount Summary
+            </h3>
+            <div class="space-y-3">
+                <div class="flex justify-between text-sm py-2" style="border-bottom:1px solid #f1f5f9;">
+                    <span style="color:#64748b;">Subtotal</span>
+                    <span class="font-medium" style="color:#1e293b;">₹{{ order.original_price }}</span>
                 </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">GST (18%)</div>
-                    <div class="text-white font-medium">₹{{ order.tax }}</div>
+                <div class="flex justify-between text-sm py-2" style="border-bottom:1px solid #f1f5f9;">
+                    <span style="color:#64748b;">GST (18%)</span>
+                    <span class="font-medium" style="color:#1e293b;">₹{{ order.tax }}</span>
                 </div>
-                <div class="grid grid-cols-2 pt-4 border-t border-borderGray mt-4">
-                    <div class="text-amber-400 text-lg font-bold">Total Amount</div>
-                    <div class="text-amber-400 text-lg font-bold">₹{{ order.total }}</div>
+                <div class="flex justify-between pt-4 mt-1">
+                    <span class="text-lg font-bold" style="color:#d97706;">Total Amount</span>
+                    <span class="text-lg font-bold" style="color:#d97706;">₹{{ order.total }}</span>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 {% endblock %}

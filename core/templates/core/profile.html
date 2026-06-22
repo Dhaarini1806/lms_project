@@ -3,76 +3,489 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tradersfy - My Account Profile</title>
+    <title>My Profile - Tradersfy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * { box-sizing: border-box; }
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+        }
+
+        /* ── Nav ── */
+        .nav-bar {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 4px rgba(15,23,42,.05);
+        }
+        .nav-links a {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            margin-left: 20px;
+            transition: color 0.15s;
+        }
+        .nav-links a:hover { color: #059669; }
+
+        /* ── Page wrapper ── */
+        .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+
+        /* ── Profile header card ── */
+        .profile-header {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px 20px 0 0;
+            padding: 36px 36px 28px;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            box-shadow: 0 2px 8px rgba(15,23,42,.05);
+        }
+        .profile-avatar {
+            width: 88px;
+            height: 88px;
+            background: linear-gradient(135deg, #059669 0%, #00AEEF 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffffff;
+            flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(5,150,105,0.25);
+        }
+        .profile-name { font-size: 22px; font-weight: 800; color: #1e293b; }
+        .profile-email { color: #94a3b8; margin-top: 4px; font-size: 13px; }
+        .profile-stats { margin-top: 12px; display: flex; gap: 24px; font-size: 13px; }
+        .profile-stats .stat-val { font-weight: 800; color: #00AEEF; }
+        .profile-stats .stat-lbl { color: #64748b; margin-left: 4px; }
+
+        /* ── Tabs strip ── */
+        .tabs-wrap {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            border-bottom: none;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 14px 24px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn:hover { color: #1e293b; }
+        .tab-btn.active { color: #059669; border-bottom-color: #059669; }
+
+        /* ── Tab content ── */
+        .tab-content { display: none; padding: 32px 36px; }
+        .tab-content.active { display: block; }
+
+        /* ── Form inputs ── */
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #94a3b8;
+            margin-bottom: 7px;
+        }
+        .form-input {
+            width: 100%;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 11px 14px;
+            color: #1e293b;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+        .form-input::placeholder { color: #94a3b8; }
+        .form-input:focus {
+            outline: none;
+            background: #ffffff;
+            border-color: #00AEEF;
+            box-shadow: 0 0 0 3px rgba(0,174,239,0.1);
+        }
+        .form-input:disabled {
+            background: #f8fafc;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+        select.form-input option { background: #ffffff; color: #1e293b; }
+        textarea.form-input { resize: vertical; line-height: 1.6; }
+
+        /* ── Grid ── */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+        .form-group { margin-bottom: 20px; }
+
+        /* ── Buttons ── */
+        .btn-primary {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: #ffffff;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(5,150,105,0.2);
+        }
+        .btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+        .btn-secondary:hover { background: #e2e8f0; color: #1e293b; }
+
+        /* ── Course card ── */
+        .course-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 14px;
+            transition: border-color 0.15s;
+        }
+        .course-card:hover { border-color: #cbd5e1; }
+        .course-title { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+        .course-meta { font-size: 12px; color: #94a3b8; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+
+        /* ── Certificate card ── */
+        .certificate-card {
+            background: linear-gradient(135deg, rgba(5,150,105,0.04) 0%, rgba(0,174,239,0.04) 100%);
+            border: 1px solid rgba(5,150,105,0.15);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+        .certificate-number { font-size: 11px; color: #94a3b8; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .certificate-title { font-size: 16px; font-weight: 800; color: #059669; margin-bottom: 6px; }
+        .certificate-date { font-size: 12px; color: #94a3b8; margin-bottom: 16px; }
+
+        /* ── Order status badges ── */
+        .badge { padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .badge-completed { background: rgba(5,150,105,0.08); color: #059669; border: 1px solid rgba(5,150,105,0.15); }
+        .badge-pending   { background: rgba(217,119,6,0.08);  color: #d97706; border: 1px solid rgba(217,119,6,0.15); }
+        .badge-failed    { background: rgba(239,68,68,0.08);   color: #ef4444; border: 1px solid rgba(239,68,68,0.15); }
+
+        /* ── Empty state ── */
+        .empty-state { text-align: center; padding: 48px 20px; color: #94a3b8; }
+        .empty-state i { font-size: 40px; margin-bottom: 14px; display: block; color: #cbd5e1; }
+
+        /* ── Bottom rounded corner for tab panel container ── */
+        .tabs-bottom {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 16px rgba(15,23,42,.06);
+            overflow: hidden;
+        }
+    </style>
 </head>
-<body class="bg-[#0A0A0A] text-white font-sans min-h-screen">
+<body>
 
-    <div class="max-w-3xl mx-auto px-6 py-16">
-        <div class="flex justify-between items-center mb-8 border-b border-gray-900 pb-4">
-            <div>
-                <h2 class="text-2xl font-black tracking-tight">Account Configuration Profile</h2>
-                <p class="text-xs text-gray-500 mt-1">Logged in as: <span class="text-[#00C5FF] font-mono">{{ request.user.username }}</span></p>
-                <p class="text-xs text-gray-500">Enrolled Courses: {{ enrolled_courses }}</p>
+    <!-- ── Navigation ── -->
+    <div class="nav-bar">
+        <div style="font-size:18px; font-weight:800; color:#1e293b; display:flex; align-items:center; gap:8px;">
+            <div style="background:#059669; width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                <i class="fas fa-chart-line" style="color:#fff; font-size:12px;"></i>
             </div>
-            <a href="{% url 'home' %}" class="bg-[#111111] border border-gray-800 text-gray-400 px-4 py-2 rounded-xl text-xs hover:text-white transition">
-                <i class="fa-solid fa-arrow-left mr-1"></i> Return Home
-            </a>
+            Traders<span style="color:#059669;">fy</span>
         </div>
-
-        <form method="POST" class="bg-[#111111] p-8 rounded-2xl border border-gray-900 space-y-6">
-            {% csrf_token %}
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-1.5">
-                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Full Name</label>
-                    <input type="text" name="full_name" value="{{ profile.full_name|default:'' }}" placeholder="Your full name" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
-                </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Alternate Email</label>
-                    <input type="email" name="alt_email" value="{{ profile.alt_email|default:'' }}" placeholder="Alternate email address" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
-                </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Employee ID</label>
-                    <input type="text" name="employee_id" value="{{ profile.employee_id|default:'' }}" placeholder="Employee ID (if applicable)" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
-                </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">User Type</label>
-                    <select name="user_type" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
-                        <option value="student" {% if profile.user_type == "student" %}selected{% endif %}>Student</option>
-                        <option value="professional" {% if profile.user_type == "professional" %}selected{% endif %}>Professional</option>
-                        <option value="instructor" {% if profile.user_type == "instructor" %}selected{% endif %}>Instructor</option>
-                        <option value="other" {% if profile.user_type == "other" %}selected{% endif %}>Other</option>
-                    </select>
-                </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Phone Number</label>
-                    <input type="text" name="phone_number" value="{{ profile.phone_number|default:'' }}" placeholder="+91XXXXXXXXXX" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
-                </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">WhatsApp Contact Number</label>
-                    <input type="text" name="whatsapp_number" value="{{ profile.whatsapp_number|default:'' }}" placeholder="e.g. +917200843784" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
-                </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">City / Settlement Area</label>
-                    <input type="text" name="city" value="{{ profile.city }}" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">
-                </div>
-                    <option value="Maharashtra" {% if profile.state == "Maharashtra" %}selected{% endif %}>Maharashtra</option>
-                    <option value="Delhi" {% if profile.state == "Delhi" %}selected{% endif %}>Delhi</option>
-                </select>
-            </div>
-
-            <div class="space-y-1.5">
-                <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Street House Address</label>
-                <textarea name="street_address" rows="4" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-3 px-4 text-xs text-white focus:outline-none focus:border-[#00C5FF]">{{ profile.street_address }}</textarea>
-            </div>
-
-            <button type="submit" class="w-full bg-[#00C5FF] text-black font-black py-4 rounded-xl text-xs tracking-wider uppercase shadow-lg shadow-[#00C5FF]/10 hover:bg-[#00A3D4] transition">
-                Save and Sync Profile Records <i class="fa-solid fa-circle-check ml-1"></i>
-            </button>
-        </form>
+        <div class="nav-links">
+            <a href="{% url 'home' %}"><i class="fas fa-home mr-1"></i>Home</a>
+            <a href="{% url 'course_catalog' %}"><i class="fas fa-book mr-1"></i>Courses</a>
+            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+        </div>
     </div>
 
+    <div class="container">
+
+        <!-- ── Profile Header ── -->
+        <div class="profile-header">
+            <div class="profile-avatar">{{ user.username|first|upper }}</div>
+            <div style="flex:1;">
+                <div class="profile-name">{{ profile.full_name|default:user.username }}</div>
+                <div class="profile-email">{{ user.email }}</div>
+                <div class="profile-stats">
+                    <div><span class="stat-val">{{ enrolled_courses }}</span><span class="stat-lbl">Courses Enrolled</span></div>
+                    <div><span class="stat-val">{{ user.certificates.count }}</span><span class="stat-lbl">Certificates</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Tabs ── -->
+        <div class="tabs-wrap">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab(event,'personal')">
+                    <i class="fas fa-user"></i> Personal Info
+                </button>
+                <button class="tab-btn" onclick="switchTab(event,'courses')">
+                    <i class="fas fa-book"></i> My Courses
+                </button>
+                <button class="tab-btn" onclick="switchTab(event,'certificates')">
+                    <i class="fas fa-certificate"></i> Certificates
+                </button>
+                <button class="tab-btn" onclick="switchTab(event,'orders')">
+                    <i class="fas fa-receipt"></i> Orders
+                </button>
+            </div>
+        </div>
+
+        <div class="tabs-bottom">
+
+            <!-- ── Personal Info Tab ── -->
+            <div id="personal" class="tab-content active">
+                <h3 style="font-size:17px; font-weight:800; color:#1e293b; margin-bottom:24px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-edit" style="color:#059669;"></i> Edit Profile
+                </h3>
+                <form method="POST" style="max-width:680px;">
+                    {% csrf_token %}
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="full_name" value="{{ profile.full_name|default:'' }}" class="form-input" placeholder="Your full name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" value="{{ user.email }}" class="form-input" disabled>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" name="phone_number" value="{{ profile.phone_number|default:'' }}" class="form-input" placeholder="Your phone number">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">WhatsApp Number</label>
+                            <input type="tel" name="whatsapp_number" value="{{ profile.whatsapp_number|default:'' }}" class="form-input" placeholder="Your WhatsApp number">
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Employee ID</label>
+                            <input type="text" name="employee_id" value="{{ profile.employee_id|default:'' }}" class="form-input" placeholder="Your employee ID">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">User Type</label>
+                            <select name="user_type" class="form-input">
+                                <option value="student"      {% if profile.user_type == 'student'      %}selected{% endif %}>Student</option>
+                                <option value="professional" {% if profile.user_type == 'professional' %}selected{% endif %}>Professional</option>
+                                <option value="instructor"   {% if profile.user_type == 'instructor'   %}selected{% endif %}>Instructor</option>
+                                <option value="other"        {% if profile.user_type == 'other'        %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Alternate Email</label>
+                        <input type="email" name="alt_email" value="{{ profile.alt_email|default:'' }}" class="form-input" placeholder="Alternate email address">
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">State</label>
+                            <input type="text" name="state" value="{{ profile.state|default:'' }}" class="form-input" placeholder="Your state">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City</label>
+                            <input type="text" name="city" value="{{ profile.city|default:'' }}" class="form-input" placeholder="Your city">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Street Address</label>
+                        <textarea name="street_address" class="form-input" rows="3" placeholder="Your street address">{{ profile.street_address|default:'' }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+
+            <!-- ── My Courses Tab ── -->
+            <div id="courses" class="tab-content">
+                <h3 style="font-size:17px; font-weight:800; color:#1e293b; margin-bottom:24px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-book" style="color:#059669;"></i> My Courses
+                </h3>
+                {% if user.unlocked_courses.all %}
+                    {% for course_access in user.unlocked_courses.all %}
+                    <div class="course-card">
+                        <div class="course-title">{{ course_access.course.title }}</div>
+                        <div class="course-meta">
+                            <span><i class="fas fa-layer-group mr-1"></i>{{ course_access.course.level }}</span>
+                            <span>•</span>
+                            <span><i class="fas fa-book-open mr-1"></i>{{ course_access.course.lessons.count }} Lessons</span>
+                            <span>•</span>
+                            <span><i class="fas fa-clock mr-1"></i>{{ course_access.course.get_duration_display }}</span>
+                        </div>
+                        <div style="margin-top:14px;">
+                            <a href="{% url 'course_detail' course_access.course.slug %}" class="btn-secondary">
+                                <i class="fas fa-play"></i> Continue Learning
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p style="font-size:15px; font-weight:600; color:#64748b;">You haven't enrolled in any courses yet.</p>
+                        <div style="margin-top:16px;">
+                            <a href="{% url 'course_catalog' %}" class="btn-primary">
+                                <i class="fas fa-book"></i> Browse Courses
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- ── Certificates Tab ── -->
+            <div id="certificates" class="tab-content">
+                <h3 style="font-size:17px; font-weight:800; color:#1e293b; margin-bottom:24px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-certificate" style="color:#059669;"></i> My Certificates
+                </h3>
+                {% if user.certificates.all %}
+                    {% for certificate in user.certificates.all %}
+                    <div class="certificate-card">
+                        <div class="certificate-number">Certificate #{{ certificate.certificate_number }}</div>
+                        <div class="certificate-title">{{ certificate.course.title }}</div>
+                        <div class="certificate-date">Issued: {{ certificate.issue_date|date:"d F Y" }}</div>
+                        <div style="display:flex; gap:10px; justify-content:center;">
+                            <a href="{% url 'certificate_page' certificate.course.id %}" class="btn-secondary">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="{% url 'download_certificate_pdf' certificate.id %}" class="btn-secondary">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-certificate"></i>
+                        <p style="font-size:15px; font-weight:600; color:#64748b;">You haven't earned any certificates yet.</p>
+                        <p style="font-size:12px; margin-top:6px;">Complete a course to earn a certificate!</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- ── Orders Tab ── -->
+            <div id="orders" class="tab-content">
+                <h3 style="font-size:17px; font-weight:800; color:#1e293b; margin-bottom:24px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-receipt" style="color:#059669;"></i> Order History
+                </h3>
+                {% if user.orders.all %}
+                    {% for order in user.orders.all %}
+                    <div class="course-card">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+                            <div>
+                                <div class="course-title">Order {{ order.order_id }}</div>
+                                <div class="course-meta">
+                                    <span><i class="fas fa-calendar mr-1"></i>{{ order.created_at|date:"d F Y" }}</span>
+                                    <span>•</span>
+                                    <span><i class="fas fa-rupee-sign mr-1"></i>₹{{ order.total }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                {% if order.status == 'completed' %}
+                                    <span class="badge badge-completed">✓ Completed</span>
+                                {% elif order.status == 'pending' %}
+                                    <span class="badge badge-pending">⏱ Pending</span>
+                                {% else %}
+                                    <span class="badge badge-failed">✗ {{ order.status|upper }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+                            <a href="{% url 'invoice_page' order.id %}" class="btn-secondary">
+                                <i class="fas fa-eye"></i> View Invoice
+                            </a>
+                            <a href="{% url 'download_invoice_pdf' order.id %}" class="btn-secondary">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p style="font-size:15px; font-weight:600; color:#64748b;">You haven't placed any orders yet.</p>
+                        <div style="margin-top:16px;">
+                            <a href="{% url 'course_catalog' %}" class="btn-primary">
+                                <i class="fas fa-book"></i> Browse Courses
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div><!-- end .tabs-bottom -->
+    </div><!-- end .container -->
+
+    <script>
+        function switchTab(event, tabName) {
+            event.preventDefault();
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.closest('.tab-btn').classList.add('active');
+        }
+    </script>
 </body>
 </html>

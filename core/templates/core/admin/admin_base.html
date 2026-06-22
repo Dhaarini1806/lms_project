@@ -4,97 +4,144 @@
 {% block extra_css %}
 <style>
     :root {
-        --sidebar-width: 280px;
-        --accent-primary: #10B981;
-        --bg-dark: #0A0A0F;
-        --card-bg: rgba(18, 18, 26, 0.9);
-        --top-nav-height: 0px; /* Adjust if a top nav is added later */
+        --sidebar-width:    280px;
+        --accent-primary:   #059669;   /* emerald-600                    */
+        --accent-cyan:      #00AEEF;   /* Tradersfy brand                */
+        --bg-page:          #f8fafc;   /* off-white page                 */
+        --card-bg:          #ffffff;   /* white card surface             */
+        --card-bg-alt:      #f1f5f9;   /* slate-100 tinted surface       */
+        --border-light:     #e2e8f0;   /* slate-200 borders              */
+        --text-primary:     #1e293b;   /* slate-800                      */
+        --text-muted:       #64748b;   /* slate-500                      */
+        --text-faint:       #94a3b8;   /* slate-400                      */
+        --shadow-card:      0 4px 16px rgba(15,23,42,.07), 0 1px 4px rgba(15,23,42,.04);
+        --shadow-sidebar:   4px 0 24px rgba(15,23,42,.06);
     }
 
     body {
-        background-color: var(--bg-dark);
+        background-color: var(--bg-page);
+        color: var(--text-primary);
         overflow-x: hidden;
         margin: 0;
         padding: 0;
     }
 
-    /* Fixed Sticky Sidebar */
-    .glass-sidebar { 
-        background: var(--card-bg); 
-        backdrop-filter: blur(24px); 
-        border-right: 1px solid rgba(255,255,255,0.08); 
+    /* ── Fixed Admin Sidebar ── */
+    .glass-sidebar {
+        background: var(--card-bg);
+        border-right: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sidebar);
         position: fixed;
         top: 0;
         left: 0;
         width: var(--sidebar-width);
         height: 100vh;
-        z-index: 1000; /* High z-index to stay on top */
+        z-index: 1000;
         display: flex;
         flex-direction: column;
-        padding: 2rem 1.5rem;
+        padding: 2rem 1.25rem;
+        overflow-y: auto;
     }
 
-    .sidebar-link { 
+    /* ── Sidebar Navigation Links ── */
+    .sidebar-link {
         display: flex;
         align-items: center;
         gap: 0.875rem;
-        padding: 0.875rem 1.25rem;
-        border-radius: 1rem;
-        color: #94a3b8;
+        padding: 0.75rem 1rem;
+        border-radius: 0.875rem;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        font-weight: 500;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         text-decoration: none;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.25rem;
     }
 
-    .sidebar-link:hover { 
-        background: rgba(255, 255, 255, 0.05);
-        color: #ffffff;
+    .sidebar-link:hover {
+        background: var(--card-bg-alt);
+        color: var(--text-primary);
     }
 
-    .sidebar-link.active { 
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
+    .sidebar-link.active {
+        background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
         color: var(--accent-primary);
         font-weight: 600;
-        border: 1px solid rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(5, 150, 105, 0.2);
     }
 
-    /* Main Content Layout - Fixed Margin to prevent overlap */
+    .sidebar-link i {
+        width: 1.125rem;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    /* ── Main Content Area ── */
     .admin-main {
         margin-left: var(--sidebar-width);
         width: calc(100% - var(--sidebar-width));
         min-height: 100vh;
-        padding: 4rem 3rem 3rem 3rem; /* Increased top padding */
+        padding: 3.5rem 3rem 3rem 3rem;
         position: relative;
         z-index: 1;
+        background-color: var(--bg-page);
     }
 
-    /* Enhanced Form UI */
+    /* ── Glass card (overrides base.html for admin – cleaner in full-light context) ── */
+    .glass {
+        background: var(--card-bg);
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-card);
+        backdrop-filter: none;
+    }
+
+    /* ── Form Labels ── */
     .form-group label {
         display: block;
-        font-size: 0.875rem;
+        font-size: 0.8125rem;
         font-weight: 600;
-        color: #94a3b8;
+        color: var(--text-muted);
         margin-bottom: 0.5rem;
-        margin-left: 0.25rem;
+        margin-left: 0.125rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
     }
 
-    input[type="text"], input[type="number"], input[type="url"], input[type="email"], 
-    input[type="password"], select, textarea {
-        background: rgba(255, 255, 255, 0.03) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 1rem !important;
-        color: white !important;
-        padding: 0.875rem 1.25rem !important;
+    /* ── Form Inputs ── */
+    input[type="text"],
+    input[type="number"],
+    input[type="url"],
+    input[type="email"],
+    input[type="password"],
+    select,
+    textarea {
+        background: var(--card-bg-alt) !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 0.875rem !important;
+        color: var(--text-primary) !important;
+        padding: 0.8125rem 1.125rem !important;
         width: 100%;
         font-size: 0.9375rem;
+        font-family: inherit;
         transition: all 0.2s ease;
     }
 
-    input:focus, select:focus, textarea:focus {
-        background: rgba(255, 255, 255, 0.06) !important;
+    input[type="text"]::placeholder,
+    input[type="number"]::placeholder,
+    input[type="url"]::placeholder,
+    input[type="email"]::placeholder,
+    input[type="password"]::placeholder,
+    textarea::placeholder {
+        color: var(--text-faint) !important;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        background: #ffffff !important;
         border-color: var(--accent-primary) !important;
         outline: none !important;
-        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1) !important;
+        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12) !important;
     }
 
     textarea {
@@ -102,33 +149,71 @@
         line-height: 1.6;
     }
 
-    /* Drag & Drop */
+    select option {
+        background: #ffffff;
+        color: var(--text-primary);
+    }
+
+    /* ── Drag & Drop Zone ── */
     .drop-zone {
-        border: 2px dashed rgba(255, 255, 255, 0.1);
-        border-radius: 1.25rem;
+        border: 2px dashed var(--border-light);
+        border-radius: 1.125rem;
         padding: 2.5rem;
         text-align: center;
-        transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.01);
+        transition: all 0.25s ease;
+        background: var(--card-bg-alt);
         cursor: pointer;
         position: relative;
     }
 
-    .drop-zone:hover, .drop-zone.drag-over {
+    .drop-zone:hover,
+    .drop-zone.drag-over {
         border-color: var(--accent-primary);
-        background: rgba(16, 185, 129, 0.05);
+        background: rgba(5, 150, 105, 0.04);
     }
 
     .drop-zone input[type="file"] {
         position: absolute;
         width: 100%;
         height: 100%;
-        top: 0; left: 0;
+        top: 0;
+        left: 0;
         opacity: 0;
         cursor: pointer;
     }
 
-    /* Security Deterrents */
+    /* ── Primary Button (admin context) ── */
+    .btn-primary {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        color: #ffffff !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
+        transform: translateY(-1px);
+    }
+
+    /* ── Table row hover ── */
+    .hover\:bg-white\/\[0\.02\]:hover {
+        background-color: var(--card-bg-alt) !important;
+    }
+    .hover\:bg-white\/5:hover {
+        background-color: var(--card-bg-alt) !important;
+    }
+
+    /* ── borderGray alias ── */
+    .border-borderGray { border-color: var(--border-light); }
+    .divide-borderGray > * + * { border-color: var(--border-light); }
+
+    /* ── Table header tint ── */
+    .bg-white\/5 { background-color: var(--card-bg-alt) !important; }
+    .bg-white\/\[0\.02\] { background-color: rgba(241,245,249,0.6) !important; }
+
+    /* ── Security: block print ── */
     @media print {
         body { display: none !important; }
     }
@@ -138,16 +223,17 @@
 
 {% block content %}
 <div class="flex min-h-screen">
-    <!-- Fixed Sticky Sidebar (Always Visible) -->
+
+    <!-- ── Fixed Sidebar ── -->
     <aside class="glass-sidebar">
-        <div class="mb-12 px-2">
+        <div class="mb-10 px-1">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-accentGreen rounded-xl flex items-center justify-center shadow-lg shadow-accentGreen/20">
-                    <i class="fa-solid fa-graduation-cap text-white text-xl"></i>
+                <div class="w-10 h-10 bg-accentGreen rounded-xl flex items-center justify-center shadow-md" style="background:var(--accent-primary);">
+                    <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-xl font-bold text-white tracking-tight">Tradersfy</span>
-                    <span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Master Admin</span>
+                    <span class="text-lg font-bold tracking-tight" style="color:var(--text-primary);">Tradersfy</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest" style="color:var(--text-faint);">Master Admin</span>
                 </div>
             </div>
         </div>
@@ -179,26 +265,31 @@
             </a>
         </nav>
 
-        <div class="pt-6 border-t border-white/5">
+        <div class="pt-5 border-t" style="border-color:var(--border-light);">
             <a href="{% url 'home' %}" class="sidebar-link">
                 <i class="fa-solid fa-house"></i>
                 <span>Back to Site</span>
             </a>
-            <a href="{% url 'logout' %}" class="sidebar-link text-red-400 hover:bg-red-500/10">
+            <a href="{% url 'logout' %}" class="sidebar-link" style="color:#ef4444;" onmouseover="this.style.background='rgba(239,68,68,.07)'" onmouseout="this.style.background=''">
                 <i class="fa-solid fa-right-from-bracket"></i>
                 <span>Logout</span>
             </a>
         </div>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- ── Main Content ── -->
     <main class="admin-main">
         {% if messages %}
         <div class="mb-8 space-y-3">
             {% for message in messages %}
-            <div class="p-4 rounded-2xl flex items-center gap-3 {% if message.tags == 'success' %}bg-green-500/10 text-green-400 border border-green-500/20{% else %}bg-red-500/10 text-red-400 border border-red-500/20{% endif %}">
+            <div class="p-4 rounded-2xl flex items-center gap-3 text-sm font-medium
+                {% if message.tags == 'success' %}
+                    border border-emerald-200 bg-emerald-50 text-emerald-700
+                {% else %}
+                    border border-red-200 bg-red-50 text-red-700
+                {% endif %}">
                 <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
-                <span class="text-sm font-medium">{{ message }}</span>
+                <span>{{ message }}</span>
             </div>
             {% endfor %}
         </div>
@@ -216,7 +307,13 @@
     (function() {
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 's') || e.key === 'PrintScreen') {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                (e.ctrlKey && e.key === 'u') ||
+                (e.ctrlKey && e.key === 's') ||
+                e.key === 'PrintScreen'
+            ) {
                 e.preventDefault();
                 return false;
             }
@@ -231,11 +328,13 @@
         window.addEventListener('focus', () => { document.body.style.filter = 'none'; });
     })();
 
-    // Drag and Drop Global Logic
+    // Drag & Drop Global Logic
     document.querySelectorAll('.drop-zone').forEach(zone => {
         const input = zone.querySelector('input[type="file"]');
         zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-        ['dragleave', 'drop'].forEach(event => { zone.addEventListener(event, () => zone.classList.remove('drag-over')); });
+        ['dragleave', 'drop'].forEach(event => {
+            zone.addEventListener(event, () => zone.classList.remove('drag-over'));
+        });
         zone.addEventListener('drop', e => {
             e.preventDefault();
             if (e.dataTransfer.files.length) {
@@ -243,8 +342,13 @@
                 updateDropZoneLabel(zone, e.dataTransfer.files[0].name);
             }
         });
-        if (input) { input.addEventListener('change', () => { if (input.files.length) updateDropZoneLabel(zone, input.files[0].name); }); }
+        if (input) {
+            input.addEventListener('change', () => {
+                if (input.files.length) updateDropZoneLabel(zone, input.files[0].name);
+            });
+        }
     });
+
     function updateDropZoneLabel(zone, filename) {
         const label = zone.querySelector('p');
         if (label) label.textContent = `Selected: ${filename}`;

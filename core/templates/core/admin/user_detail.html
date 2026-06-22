@@ -1,134 +1,121 @@
 {% extends 'core/admin/admin_base.html' %}
 {% load static %}
-
 {% block title %}User Details - Tradersfy Admin{% endblock %}
 
 {% block admin_extra_css %}
 <style>
-    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-    .status-completed { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
-    .status-pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
-    .status-failed { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .status-badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:600; text-transform:uppercase; }
+    .status-completed { background:rgba(5,150,105,0.08);  color:#059669; border:1px solid rgba(5,150,105,0.15); }
+    .status-pending   { background:rgba(217,119,6,0.08);  color:#d97706; border:1px solid rgba(217,119,6,0.15); }
+    .status-failed    { background:rgba(239,68,68,0.08);   color:#ef4444; border:1px solid rgba(239,68,68,0.15); }
 </style>
 {% endblock %}
 
 {% block admin_content %}
 <div class="flex items-center justify-between mb-8">
-    <h1 class="text-3xl font-black text-white">User Details: {{ user.username }}</h1>
-    <a href="{% url 'admin_users' %}" class="glass hover:bg-white/5 text-white font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2 transition">
+    <h1 class="text-3xl font-black" style="color:#1e293b;">User Details: {{ user.username }}</h1>
+    <a href="{% url 'admin_users' %}"
+       class="glass font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2 transition"
+       style="color:#1e293b;"
+       onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='';">
         <i class="fa-solid fa-arrow-left"></i> Back to Users
     </a>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <div class="lg:col-span-2">
+    <div class="lg:col-span-2 space-y-6">
+
         <!-- User Info -->
-        <div class="glass p-8 rounded-2xl mb-6">
-            <h3 class="text-xl font-black text-white mb-4"><i class="fa-solid fa-user mr-2"></i>User Information</h3>
+        <div class="glass p-8 rounded-2xl">
+            <h3 class="text-xl font-black mb-5 flex items-center gap-2" style="color:#1e293b;">
+                <i class="fa-solid fa-user" style="color:#059669;"></i> User Information
+            </h3>
             <div class="space-y-4">
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Username</div>
-                    <div class="text-white font-medium">{{ user.username }}</div>
+                {% for label, value in user_info %}
+                <div class="grid grid-cols-2 text-sm py-2" style="border-bottom:1px solid #f1f5f9;">
+                    <div style="color:#64748b;">{{ label }}</div>
+                    <div class="font-medium" style="color:#1e293b;">{{ value }}</div>
                 </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Full Name</div>
-                    <div class="text-white font-medium">{{ profile.full_name|default:"N/A" }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Email</div>
-                    <div class="text-white font-medium">{{ user.email }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Phone</div>
-                    <div class="text-white font-medium">{{ profile.phone_number|default:"N/A" }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">WhatsApp</div>
-                    <div class="text-white font-medium">{{ profile.whatsapp_number|default:"N/A" }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">User Type</div>
-                    <div class="text-white font-medium">{{ profile.get_user_type_display|default:"N/A" }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Joined</div>
-                    <div class="text-white font-medium">{{ user.date_joined|date:"d F Y" }}</div>
-                </div>
+                {% endfor %}
+                <div class="grid grid-cols-2 text-sm py-2" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">Username</div><div class="font-medium" style="color:#1e293b;">{{ user.username }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">Full Name</div><div class="font-medium" style="color:#1e293b;">{{ profile.full_name|default:"N/A" }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">Email</div><div class="font-medium" style="color:#1e293b;">{{ user.email }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">Phone</div><div class="font-medium" style="color:#1e293b;">{{ profile.phone_number|default:"N/A" }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">WhatsApp</div><div class="font-medium" style="color:#1e293b;">{{ profile.whatsapp_number|default:"N/A" }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">User Type</div><div class="font-medium" style="color:#1e293b;">{{ profile.get_user_type_display|default:"N/A" }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2"><div style="color:#64748b;">Joined</div><div class="font-medium" style="color:#1e293b;">{{ user.date_joined|date:"d F Y" }}</div></div>
             </div>
         </div>
 
         <!-- Address Info -->
-        <div class="glass p-8 rounded-2xl mb-6">
-            <h3 class="text-xl font-black text-white mb-4"><i class="fa-solid fa-map-marker-alt mr-2"></i>Address Information</h3>
-            <div class="space-y-4">
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">State</div>
-                    <div class="text-white font-medium">{{ profile.state|default:"N/A" }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">City</div>
-                    <div class="text-white font-medium">{{ profile.city|default:"N/A" }}</div>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div class="text-gray-400 text-sm">Street Address</div>
-                    <div class="text-white font-medium">{{ profile.street_address|default:"N/A" }}</div>
-                </div>
+        <div class="glass p-8 rounded-2xl">
+            <h3 class="text-xl font-black mb-5 flex items-center gap-2" style="color:#1e293b;">
+                <i class="fa-solid fa-map-marker-alt" style="color:#059669;"></i> Address Information
+            </h3>
+            <div class="space-y-2">
+                <div class="grid grid-cols-2 text-sm py-2" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">State</div><div class="font-medium" style="color:#1e293b;">{{ profile.state|default:"N/A" }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2" style="border-bottom:1px solid #f1f5f9;"><div style="color:#64748b;">City</div><div class="font-medium" style="color:#1e293b;">{{ profile.city|default:"N/A" }}</div></div>
+                <div class="grid grid-cols-2 text-sm py-2"><div style="color:#64748b;">Street Address</div><div class="font-medium" style="color:#1e293b;">{{ profile.street_address|default:"N/A" }}</div></div>
             </div>
         </div>
     </div>
 
-    <div class="lg:col-span-1">
+    <div class="lg:col-span-1 space-y-6">
+
         <!-- Enrolled Courses -->
-        <div class="glass p-8 rounded-2xl mb-6">
-            <h3 class="text-xl font-black text-white mb-4"><i class="fa-solid fa-book mr-2"></i>Enrolled Courses ({{ courses.count }})</h3>
+        <div class="glass p-8 rounded-2xl">
+            <h3 class="text-xl font-black mb-5 flex items-center gap-2" style="color:#1e293b;">
+                <i class="fa-solid fa-book" style="color:#059669;"></i> Enrolled Courses ({{ courses.count }})
+            </h3>
             {% if courses %}
-                <div class="divide-y divide-borderGray">
-                    <div class="grid grid-cols-3 gap-4 py-3 px-2 font-semibold text-amber-400 bg-white/5 rounded-t-lg">
-                        <div>Course</div>
-                        <div>Level</div>
-                        <div>Status</div>
-                    </div>
-                    {% for course in courses %}
-                    <div class="grid grid-cols-3 gap-4 py-3 px-2 hover:bg-white/[0.02] transition">
-                        <div class="text-white text-sm">{{ course.title }}</div>
-                        <div class="text-white text-sm">{{ course.level }}</div>
-                        <div><span class="status-badge status-completed">Enrolled</span></div>
-                    </div>
-                    {% endfor %}
+            <div>
+                <div class="grid grid-cols-3 gap-3 py-3 px-2 text-xs font-bold rounded-t-lg mb-1" style="background:#f1f5f9; color:#d97706;">
+                    <div>Course</div><div>Level</div><div>Status</div>
                 </div>
+                {% for course in courses %}
+                <div class="grid grid-cols-3 gap-3 py-3 px-2 text-sm transition" style="border-bottom:1px solid #f1f5f9;"
+                     onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='';">
+                    <div style="color:#1e293b;">{{ course.title }}</div>
+                    <div style="color:#64748b;">{{ course.level }}</div>
+                    <div><span class="status-badge status-completed">Enrolled</span></div>
+                </div>
+                {% endfor %}
+            </div>
             {% else %}
-                <p class="text-gray-500 py-4 text-center">No courses enrolled</p>
+            <p class="text-center py-4 text-sm" style="color:#94a3b8;">No courses enrolled</p>
             {% endif %}
         </div>
 
         <!-- Orders -->
-        <div class="glass p-8 rounded-2xl mb-6">
-            <h3 class="text-xl font-black text-white mb-4"><i class="fa-solid fa-receipt mr-2"></i>Orders ({{ orders.count }})</h3>
+        <div class="glass p-8 rounded-2xl">
+            <h3 class="text-xl font-black mb-5 flex items-center gap-2" style="color:#1e293b;">
+                <i class="fa-solid fa-receipt" style="color:#d97706;"></i> Orders ({{ orders.count }})
+            </h3>
             {% if orders %}
-                <div class="divide-y divide-borderGray">
-                    <div class="grid grid-cols-3 gap-4 py-3 px-2 font-semibold text-amber-400 bg-white/5 rounded-t-lg">
-                        <div>Order ID</div>
-                        <div>Amount</div>
-                        <div>Status</div>
-                    </div>
-                    {% for order in orders %}
-                    <div class="grid grid-cols-3 gap-4 py-3 px-2 hover:bg-white/[0.02] transition">
-                        <div class="font-mono text-sm text-white">{{ order.order_id }}</div>
-                        <div class="text-white text-sm">₹{{ order.total }}</div>
-                        <div>
-                            {% if order.status == 'completed' %}
-                                <span class="status-badge status-completed">Completed</span>
-                            {% else %}
-                                <span class="status-badge status-pending">{{ order.status|upper }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
+            <div>
+                <div class="grid grid-cols-3 gap-3 py-3 px-2 text-xs font-bold rounded-t-lg mb-1" style="background:#f1f5f9; color:#d97706;">
+                    <div>Order ID</div><div>Amount</div><div>Status</div>
                 </div>
+                {% for order in orders %}
+                <div class="grid grid-cols-3 gap-3 py-3 px-2 text-sm transition" style="border-bottom:1px solid #f1f5f9;"
+                     onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='';">
+                    <div class="font-mono" style="color:#1e293b;">{{ order.order_id }}</div>
+                    <div style="color:#1e293b;">₹{{ order.total }}</div>
+                    <div>
+                        {% if order.status == 'completed' %}
+                            <span class="status-badge status-completed">Completed</span>
+                        {% else %}
+                            <span class="status-badge status-pending">{{ order.status|upper }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
             {% else %}
-                <p class="text-gray-500 py-4 text-center">No orders</p>
+            <p class="text-center py-4 text-sm" style="color:#94a3b8;">No orders</p>
             {% endif %}
         </div>
+
     </div>
 </div>
 {% endblock %}

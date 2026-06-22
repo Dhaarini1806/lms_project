@@ -7,83 +7,115 @@
     <title>Tradersfy - Course Catalog</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { background-color: #f8fafc; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; }
+        input[type="checkbox"], input[type="radio"] { accent-color: #059669; }
+        select {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8125rem;
+            color: #1e293b;
+            width: 100%;
+            font-family: inherit;
+        }
+        select:focus { outline: none; border-color: #00AEEF; box-shadow: 0 0 0 2px rgba(0,174,239,0.1); }
+        select option { background: #ffffff; color: #1e293b; }
+    </style>
 </head>
-<body class="bg-[#0A0A0A] text-white font-sans min-h-screen">
+<body class="min-h-screen font-sans">
 
-    <header class="w-full flex items-center justify-between px-6 md:px-16 py-5 bg-[#111111] border-b border-gray-900 sticky top-0 z-50">
-        <div class="text-xl font-bold tracking-wider text-[#00C5FF]">
-            <a href="/" class="flex items-center">
-                <span class="border-2 border-[#00C5FF] px-2 py-0.5 rounded mr-2 text-xs">T</span> Tradersfy
+    <!-- ── Header ── -->
+    <header class="w-full flex items-center justify-between px-6 md:px-16 py-4 sticky top-0 z-50"
+            style="background:#ffffff; border-bottom:1px solid #e2e8f0;">
+        <div class="text-xl font-bold" style="color:#1e293b;">
+            <a href="/" class="flex items-center gap-2">
+                <div class="bg-emerald-600 p-1.5 rounded-lg">
+                    <i class="fa-solid fa-chart-line text-white text-xs"></i>
+                </div>
+                Traders<span class="text-emerald-600">fy</span>
             </a>
         </div>
-        <div class="flex items-center space-x-6">
-            <a href="{% url 'view_cart' %}" class="relative text-gray-400 hover:text-white text-lg">
-                <i class="fa-solid fa-bag-shopping"></i>
+        <div class="flex items-center gap-4">
+            <a href="{% url 'view_cart' %}" class="relative transition hover:text-emerald-600" style="color:#64748b;" title="Cart">
+                <i class="fa-solid fa-bag-shopping text-lg"></i>
             </a>
-            <a href="/login/" class="text-sm bg-[#222222] px-4 py-2 rounded-xl border border-gray-800 hover:bg-black transition">Sign In</a>
+            <a href="/login/"
+               class="text-sm font-semibold px-4 py-2 rounded-xl transition"
+               style="background:#f1f5f9; border:1px solid #e2e8f0; color:#1e293b;"
+               onmouseover="this.style.background='#e2e8f0';" onmouseout="this.style.background='#f1f5f9';">Sign In</a>
         </div>
     </header>
 
-    <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-4 gap-8">
-        
-        <aside class="bg-[#111111] p-6 rounded-2xl border border-gray-900 h-fit">
+    <div class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+        <!-- ── Filter Sidebar ── -->
+        <aside class="p-6 rounded-2xl h-fit" style="background:#ffffff; border:1px solid #e2e8f0; box-shadow:0 2px 8px rgba(15,23,42,.05);">
             <form method="GET" action="{% url 'course_catalog' %}" id="filterForm" class="space-y-6">
-                
-                <div class="flex items-center justify-between border-b border-gray-800 pb-3">
-                    <h3 class="font-bold text-sm tracking-wide text-gray-200 flex items-center">
-                        <i class="fa-solid fa-sliders text-[#00C5FF] mr-2"></i> Filter Options
+
+                <div class="flex items-center justify-between pb-3" style="border-bottom:1px solid #e2e8f0;">
+                    <h3 class="font-bold text-sm tracking-wide flex items-center gap-2" style="color:#1e293b;">
+                        <i class="fa-solid fa-sliders" style="color:#00AEEF;"></i> Filters
                     </h3>
-                    <a href="{% url 'course_catalog' %}" class="text-[11px] text-[#00C5FF] hover:underline">Clear All</a>
+                    <a href="{% url 'course_catalog' %}" class="text-[11px] font-semibold transition hover:text-emerald-700" style="color:#059669;">Clear All</a>
                 </div>
 
+                <!-- Sort -->
                 <div class="space-y-2">
-                    <label class="block text-[11px] font-bold uppercase text-gray-500 tracking-wider">Sort By</label>
-                    <select name="sort" onchange="document.getElementById('filterForm').submit()" class="w-full bg-[#161616] border border-gray-800 rounded-xl py-2 px-3 text-xs text-gray-300 focus:outline-none focus:border-[#00C5FF]">
-                        <option value="popular" {% if sort_by == "popular" %}selected{% endif %}>Most Popular</option>
-                        <option value="price_low" {% if sort_by == "price_low" %}selected{% endif %}>Price: Low to High</option>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider" style="color:#94a3b8;">Sort By</label>
+                    <select name="sort" onchange="document.getElementById('filterForm').submit()">
+                        <option value="popular"    {% if sort_by == "popular"    %}selected{% endif %}>Most Popular</option>
+                        <option value="price_low"  {% if sort_by == "price_low"  %}selected{% endif %}>Price: Low to High</option>
                         <option value="price_high" {% if sort_by == "price_high" %}selected{% endif %}>Price: High to Low</option>
                     </select>
                 </div>
 
+                <!-- Language -->
                 <div class="space-y-2">
-                    <label class="block text-[11px] font-bold uppercase text-gray-500 tracking-wider">Language</label>
-                    <div class="space-y-2 text-xs text-gray-400">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider" style="color:#94a3b8;">Language</label>
+                    <div class="space-y-2 text-xs" style="color:#64748b;">
                         {% for lang in "Tamil,English,Hindi,Kannada"|split_string:"," %}
-                        <label class="flex items-center space-x-2.5 cursor-pointer hover:text-white">
-                            <input type="checkbox" name="language" value="{{ lang }}" onchange="document.getElementById('filterForm').submit()" class="rounded border-gray-800 text-[#00C5FF] focus:ring-0 bg-transparent h-4 w-4" {% if lang in selected_languages %}checked{% endif %}>
+                        <label class="flex items-center gap-2.5 cursor-pointer hover:text-emerald-600">
+                            <input type="checkbox" name="language" value="{{ lang }}"
+                                   onchange="document.getElementById('filterForm').submit()"
+                                   {% if lang in selected_languages %}checked{% endif %}>
                             <span>{{ lang }}</span>
                         </label>
                         {% endfor %}
                     </div>
                 </div>
 
+                <!-- Rating -->
                 <div class="space-y-2">
-                    <label class="block text-[11px] font-bold uppercase text-gray-500 tracking-wider">Rating</label>
-                    <div class="space-y-2 text-xs text-gray-400">
-                        <label class="flex items-center space-x-2.5 cursor-pointer hover:text-white">
-                            <input type="radio" name="rating" value="5.0" onchange="document.getElementById('filterForm').submit()" class="text-[#00C5FF] focus:ring-0 bg-transparent" {% if selected_rating == "5.0" %}checked{% endif %}>
-                            <span class="text-yellow-400"><i class="fa-solid fa-star"></i> 5.0 Only</span>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider" style="color:#94a3b8;">Rating</label>
+                    <div class="space-y-2 text-xs" style="color:#64748b;">
+                        <label class="flex items-center gap-2.5 cursor-pointer hover:text-emerald-600">
+                            <input type="radio" name="rating" value="5.0" onchange="document.getElementById('filterForm').submit()" {% if selected_rating == "5.0" %}checked{% endif %}>
+                            <span class="text-amber-500"><i class="fa-solid fa-star mr-1"></i>5.0 Only</span>
                         </label>
-                        <label class="flex items-center space-x-2.5 cursor-pointer hover:text-white">
-                            <input type="radio" name="rating" value="4.5" onchange="document.getElementById('filterForm').submit()" class="text-[#00C5FF] focus:ring-0 bg-transparent" {% if selected_rating == "4.5" %}checked{% endif %}>
-                            <span class="text-yellow-400"><i class="fa-solid fa-star"></i> 4.5 & Up</span>
+                        <label class="flex items-center gap-2.5 cursor-pointer hover:text-emerald-600">
+                            <input type="radio" name="rating" value="4.5" onchange="document.getElementById('filterForm').submit()" {% if selected_rating == "4.5" %}checked{% endif %}>
+                            <span class="text-amber-500"><i class="fa-solid fa-star mr-1"></i>4.5 &amp; Up</span>
                         </label>
-                        <label class="flex items-center space-x-2.5 cursor-pointer hover:text-white">
-                            <input type="radio" name="rating" value="4.0" onchange="document.getElementById('filterForm').submit()" class="text-[#00C5FF] focus:ring-0 bg-transparent" {% if selected_rating == "4.0" %}checked{% endif %}>
-                            <span class="text-yellow-400"><i class="fa-solid fa-star"></i> 4.0 & Up</span>
+                        <label class="flex items-center gap-2.5 cursor-pointer hover:text-emerald-600">
+                            <input type="radio" name="rating" value="4.0" onchange="document.getElementById('filterForm').submit()" {% if selected_rating == "4.0" %}checked{% endif %}>
+                            <span class="text-amber-500"><i class="fa-solid fa-star mr-1"></i>4.0 &amp; Up</span>
                         </label>
                     </div>
                 </div>
 
+                <!-- Level -->
                 <div class="space-y-2">
-                    <label class="block text-[11px] font-bold uppercase text-gray-500 tracking-wider">Levels</label>
-                    <div class="space-y-2 text-xs text-gray-400">
-                        <label class="flex items-center space-x-2.5 cursor-pointer hover:text-white">
-                            <input type="checkbox" name="level" value="Beginner" onchange="document.getElementById('filterForm').submit()" class="rounded border-gray-800 text-[#00C5FF] bg-transparent h-4 w-4" {% if "Beginner" in selected_levels %}checked{% endif %}>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider" style="color:#94a3b8;">Levels</label>
+                    <div class="space-y-2 text-xs" style="color:#64748b;">
+                        <label class="flex items-center gap-2.5 cursor-pointer hover:text-emerald-600">
+                            <input type="checkbox" name="level" value="Beginner" onchange="document.getElementById('filterForm').submit()" {% if "Beginner" in selected_levels %}checked{% endif %}>
                             <span>Beginner</span>
                         </label>
-                        <label class="flex items-center space-x-2.5 cursor-pointer hover:text-white">
-                            <input type="checkbox" name="level" value="Intermediate" onchange="document.getElementById('filterForm').submit()" class="rounded border-gray-800 text-[#00C5FF] bg-transparent h-4 w-4" {% if "Intermediate" in selected_levels %}checked{% endif %}>
+                        <label class="flex items-center gap-2.5 cursor-pointer hover:text-emerald-600">
+                            <input type="checkbox" name="level" value="Intermediate" onchange="document.getElementById('filterForm').submit()" {% if "Intermediate" in selected_levels %}checked{% endif %}>
                             <span>Intermediate</span>
                         </label>
                     </div>
@@ -92,42 +124,55 @@
             </form>
         </aside>
 
+        <!-- ── Course Grid ── -->
         <main class="lg:col-span-3 space-y-6">
             <div class="flex items-center justify-between">
-                <h2 class="text-xl font-bold tracking-tight">Catalog Results ({{ courses|length }})</h2>
+                <h2 class="text-xl font-bold tracking-tight" style="color:#1e293b;">
+                    Catalog Results
+                    <span class="text-sm font-normal ml-1" style="color:#94a3b8;">({{ courses|length }})</span>
+                </h2>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {% for course in courses %}
-                <div class="bg-[#111111] border border-gray-900 rounded-2xl overflow-hidden group hover:border-gray-800 transition flex flex-col justify-between">
-                    <div class="p-5 space-y-4">
-                        <span class="bg-black/50 text-[10px] text-[#00C5FF] uppercase tracking-wider font-bold px-2.5 py-1 rounded border border-gray-900">{{ course.category }}</span>
-                        <h3 class="font-bold text-base text-white group-hover:text-[#00C5FF] transition pt-1">{{ course.title }}</h3>
-                        <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed">{{ course.short_description }}</p>
-                        
-                        <div class="flex items-center space-x-4 text-xs text-gray-400 pt-1">
-                            <span><i class="fa-solid fa-globe text-[#00C5FF] mr-1.5"></i>{{ course.language }}</span>
-                            <span><i class="fa-solid fa-layer-group text-[#00C5FF] mr-1.5"></i>{{ course.level }}</span>
-                            <span class="text-yellow-400"><i class="fa-solid fa-star mr-1"></i>{{ course.rating }}</span>
+                <div class="rounded-2xl overflow-hidden group transition flex flex-col justify-between"
+                     style="background:#ffffff; border:1px solid #e2e8f0; box-shadow:0 2px 8px rgba(15,23,42,.05);"
+                     onmouseover="this.style.borderColor='#cbd5e1';" onmouseout="this.style.borderColor='#e2e8f0';">
+                    <div class="p-5 space-y-3">
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded"
+                              style="background:rgba(0,174,239,0.07); color:#00AEEF; border:1px solid rgba(0,174,239,0.15);">
+                            {{ course.category }}
+                        </span>
+                        <h3 class="font-bold text-base group-hover:text-emerald-600 transition pt-1" style="color:#1e293b;">{{ course.title }}</h3>
+                        <p class="text-xs line-clamp-2 leading-relaxed" style="color:#64748b;">{{ course.short_description }}</p>
+                        <div class="flex items-center gap-4 text-xs pt-1" style="color:#94a3b8;">
+                            <span><i class="fa-solid fa-globe mr-1.5" style="color:#00AEEF;"></i>{{ course.language }}</span>
+                            <span><i class="fa-solid fa-layer-group mr-1.5" style="color:#00AEEF;"></i>{{ course.level }}</span>
+                            <span style="color:#f59e0b;"><i class="fa-solid fa-star mr-1"></i>{{ course.rating }}</span>
                         </div>
                     </div>
-                    
-                    <div class="p-5 pt-0 flex items-center justify-between border-t border-gray-900/40 mt-2">
-                        <span class="text-base font-black text-white">₹{{ course.price }}</span>
-                        <div class="flex space-x-2">
-                            <a href="{% url 'course_detail' course.slug %}" class="bg-[#161616] text-xs text-gray-300 px-3 py-2 rounded-xl border border-gray-800 hover:text-white transition">Details</a>
-                            <a href="{% url 'add_to_cart' course.id %}" class="bg-[#00C5FF] text-black font-bold text-xs px-3 py-2 rounded-xl hover:bg-[#00A3D4] transition">Add to Cart</a>
+                    <div class="p-5 pt-3 flex items-center justify-between" style="border-top:1px solid #f1f5f9;">
+                        <span class="text-base font-black" style="color:#1e293b;">₹{{ course.price }}</span>
+                        <div class="flex gap-2">
+                            <a href="{% url 'course_detail' course.slug %}"
+                               class="text-xs font-semibold px-3 py-2 rounded-xl transition"
+                               style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0;"
+                               onmouseover="this.style.background='#e2e8f0'; this.style.color='#1e293b';"
+                               onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';">Details</a>
+                            <a href="{% url 'add_to_cart' course.id %}"
+                               class="text-xs font-bold px-3 py-2 rounded-xl transition"
+                               style="background:#00AEEF; color:#ffffff;"
+                               onmouseover="this.style.background='#0099d4';" onmouseout="this.style.background='#00AEEF';">Add to Cart</a>
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <div class="col-span-2 text-center py-16 text-gray-500 text-xs bg-[#111111] rounded-2xl border border-gray-900">
-                    No active training items found matching your current sidebar filter parameters.
+                <div class="col-span-2 text-center py-16 text-sm rounded-2xl" style="background:#ffffff; border:1px solid #e2e8f0; color:#94a3b8;">
+                    No active training items found matching your current filter parameters.
                 </div>
                 {% endfor %}
             </div>
         </main>
-
     </div>
 </body>
 </html>

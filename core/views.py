@@ -88,7 +88,7 @@ def fulfill_order(order):
 
 def login_view(request):
     """Render the OTP login page."""
-    return render(request, 'core/login_enhanced.html')
+    return render(request, 'core/login.html')
 
 
 @csrf_exempt
@@ -414,7 +414,7 @@ def view_cart(request):
         'gst_estimate': gst_estimate,
         'grand_total': grand_total,
     }
-    return render(request, 'core/cart_enhanced.html', context)
+    return render(request, 'core/cart.html', context)
 
 
 @login_required
@@ -548,7 +548,7 @@ def checkout_view(request):
             'razorpay_key_id': getattr(settings, 'RAZORPAY_KEY_ID', 'rzp_test_placeholder'),
             'amount_paisa': amount_paisa
         }
-        return render(request, 'core/checkout_enhanced.html', context)
+        return render(request, 'core/checkout.html', context)
     
     context = {
         'cart_items': cart_items,
@@ -558,7 +558,7 @@ def checkout_view(request):
         'profile': user_profile,
         'razorpay_order_id': None
     }
-    return render(request, 'core/checkout_enhanced.html', context)
+    return render(request, 'core/checkout.html', context)
 
 
 @csrf_exempt
@@ -701,7 +701,7 @@ def profile_view(request):
         messages.success(request, "Profile updated successfully!")
         return redirect('profile')
     
-    return render(request, 'core/profile_enhanced.html', {
+    return render(request, 'core/profile.html', {
         'profile': user_profile,
         'enrolled_courses': enrolled_courses,
     })
@@ -722,7 +722,7 @@ def admin_dashboard(request):
         'total_students': User.objects.filter(is_staff=False).count(),
         'total_orders': Order.objects.count(),
     }
-    return render(request, 'core/admin_dashboard.html', context)
+    return render(request, 'core/admin/admin_dashboard.html', context)
 
 
 @login_required

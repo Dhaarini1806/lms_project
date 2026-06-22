@@ -5,68 +5,79 @@
     .table-grid { display: grid; grid-template-columns: 1fr 1.5fr 1.5fr 1.2fr 100px; gap: 20px; align-items: center; }
 </style>
 {% endblock %}
+
 {% block admin_content %}
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-12">
-        <div>
-            <h1 class="text-3xl font-black text-white mb-2">User Management</h1>
-            <p class="text-gray-500 text-sm">Monitor and manage your platform's student community.</p>
-        </div>
-        <div class="flex gap-4">
-            <a href="{% url 'admin_add_user' %}" class="btn-primary text-black font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2">
-                <i class="fa-solid fa-user-plus"></i> Add New User
-            </a>
-            <a href="{% url 'admin_download_users_pdf' %}" class="glass hover:bg-white/5 text-white font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2 transition">
-                <i class="fa-solid fa-file-pdf"></i> Export PDF
-            </a>
-        </div>
+<!-- ── Header ── -->
+<div class="flex items-center justify-between mb-10">
+    <div>
+        <h1 class="text-3xl font-black mb-1" style="color:#1e293b;">User Management</h1>
+        <p class="text-sm" style="color:#64748b;">Monitor and manage your platform's student community.</p>
+    </div>
+    <div class="flex gap-4">
+        <a href="{% url 'admin_add_user' %}" class="btn-primary font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2 shadow-sm">
+            <i class="fa-solid fa-user-plus"></i> Add New User
+        </a>
+        <a href="{% url 'admin_download_users_pdf' %}"
+           class="glass font-bold px-6 py-3 rounded-xl text-sm flex items-center gap-2 transition"
+           style="color:#1e293b;"
+           onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='';">
+            <i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> Export PDF
+        </a>
+    </div>
+</div>
+
+<!-- ── Search ── -->
+<div class="glass p-4 rounded-2xl mb-7 flex items-center gap-4">
+    <i class="fa-solid fa-magnifying-glass ml-1" style="color:#94a3b8;"></i>
+    <form method="GET" class="flex-1">
+        <input type="text" name="search"
+               placeholder="Search by username, email, or name…"
+               value="{{ search_query }}"
+               style="background:transparent; border:none; outline:none; font-size:0.875rem; color:#1e293b; width:100%;">
+    </form>
+</div>
+
+<!-- ── Table ── -->
+<div class="glass rounded-2xl overflow-hidden">
+    <!-- Header row -->
+    <div class="table-grid px-8 py-4" style="border-bottom:1px solid #e2e8f0; background:#f8fafc;">
+        <div class="text-[10px] font-black uppercase tracking-[0.2em]" style="color:#94a3b8;">Username</div>
+        <div class="text-[10px] font-black uppercase tracking-[0.2em]" style="color:#94a3b8;">Full Name</div>
+        <div class="text-[10px] font-black uppercase tracking-[0.2em]" style="color:#94a3b8;">Email Address</div>
+        <div class="text-[10px] font-black uppercase tracking-[0.2em]" style="color:#94a3b8;">Phone Number</div>
+        <div class="text-[10px] font-black uppercase tracking-[0.2em] text-right" style="color:#94a3b8;">Actions</div>
     </div>
 
-    <!-- Search Bar -->
-    <div class="glass p-4 rounded-2xl mb-8 flex items-center gap-4">
-        <i class="fa-solid fa-magnifying-glass text-gray-500 ml-2"></i>
-        <form method="GET" class="flex-1">
-            <input type="text" name="search" placeholder="Search by username, email, or name..." value="{{ search_query }}" 
-                   class="bg-transparent border-none outline-none text-sm text-white w-full placeholder:text-gray-600">
-        </form>
-    </div>
-
-    <!-- Users Table -->
-    <div class="glass rounded-2xl overflow-hidden">
-        <!-- Table Header -->
-        <div class="table-grid px-8 py-5 border-b border-borderGray bg-white/5">
-            <div class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Username</div>
-            <div class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Full Name</div>
-            <div class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Email Address</div>
-            <div class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Phone Number</div>
-            <div class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 text-right">Actions</div>
-        </div>
-
-        <!-- Table Body -->
-        <div class="divide-y divide-borderGray">
-            {% for user in users %}
-            <div class="table-grid px-8 py-5 hover:bg-white/[0.02] transition group">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-[10px] font-bold text-emerald-500">
-                        {{ user.username|slice:":2"|upper }}
-                    </div>
-                    <span class="text-sm font-bold text-white">{{ user.username }}</span>
+    <!-- Body rows -->
+    <div>
+        {% for user in users %}
+        <div class="table-grid px-8 py-4 transition"
+             style="border-bottom:1px solid #f1f5f9;"
+             onmouseover="this.style.background='#fafafa';" onmouseout="this.style.background='';">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold"
+                     style="background:rgba(5,150,105,0.08); color:#059669;">
+                    {{ user.username|slice:":2"|upper }}
                 </div>
-                <div class="text-sm text-gray-300">{{ user.profile.full_name|default:"—" }}</div>
-                <div class="text-sm text-gray-400 font-mono">{{ user.email }}</div>
-                <div class="text-sm text-gray-400">{{ user.profile.phone_number|default:"—" }}</div>
-                <div class="text-right">
-                    <a href="{% url 'admin_user_detail' user.id %}" class="text-xs font-bold text-emerald-500 hover:text-emerald-400 transition underline underline-offset-4">
-                        View Profile
-                    </a>
-                </div>
+                <span class="text-sm font-bold" style="color:#1e293b;">{{ user.username }}</span>
             </div>
-            {% empty %}
-            <div class="py-20 text-center">
-                <i class="fa-solid fa-users-slash text-gray-700 text-4xl mb-4"></i>
-                <p class="text-gray-500">No users found in the system.</p>
+            <div class="text-sm" style="color:#475569;">{{ user.profile.full_name|default:"—" }}</div>
+            <div class="text-sm font-mono" style="color:#64748b;">{{ user.email }}</div>
+            <div class="text-sm" style="color:#64748b;">{{ user.profile.phone_number|default:"—" }}</div>
+            <div class="text-right">
+                <a href="{% url 'admin_user_detail' user.id %}"
+                   class="text-xs font-bold underline underline-offset-4 transition hover:text-emerald-700"
+                   style="color:#059669;">
+                    View Profile
+                </a>
             </div>
-            {% endfor %}
         </div>
+        {% empty %}
+        <div class="py-20 text-center">
+            <i class="fa-solid fa-users-slash text-4xl mb-4" style="color:#cbd5e1;"></i>
+            <p style="color:#94a3b8;">No users found in the system.</p>
+        </div>
+        {% endfor %}
     </div>
+</div>
 {% endblock %}

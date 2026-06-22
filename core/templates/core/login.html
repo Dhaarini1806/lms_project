@@ -5,83 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log in to your Tradersfy Account</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { background-color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 </head>
-<body class="bg-[#0b0c10] text-white flex items-center justify-center min-h-screen font-sans selection:bg-[#00AEEF] selection:text-black">
+<body class="text-slate-800 flex items-center justify-center min-h-screen font-sans" style="selection-background:#00AEEF;">
 
     {% csrf_token %}
 
     <div class="w-full max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-        
-        <div class="space-y-4 hidden md:block">
-            <h1 class="text-5xl font-extrabold tracking-tight text-white leading-tight">
-                Log in to your <span class="text-white">Tradersfy</span> Account
+
+        <!-- ── Left brand panel ── -->
+        <div class="space-y-5 hidden md:block">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-emerald-600 p-2.5 rounded-xl shadow-md">
+                    <i class="fa-solid fa-chart-line text-white"></i>
+                </div>
+                <span class="text-2xl font-black" style="color:#1e293b;">Traders<span class="text-emerald-600">fy</span></span>
+            </div>
+            <h1 class="text-5xl font-extrabold tracking-tight leading-tight" style="color:#1e293b;">
+                Log in to your<br><span class="text-emerald-600">Tradersfy</span> Account
             </h1>
-            <p class="text-gray-400 text-lg max-w-md">
+            <p class="text-lg max-w-md" style="color:#64748b;">
                 Access your trading academy dashboard instantly via secure passwordless verification.
             </p>
-            <div class="flex items-end gap-3 pt-8 h-48 opacity-20">
-                <div class="w-16 h-24 border border-gray-500 rounded-sm"></div>
-                <div class="w-16 h-44 border border-gray-500 rounded-sm"></div>
-                <div class="w-16 h-36 border border-gray-500 rounded-sm"></div>
+            <!-- Decorative bars -->
+            <div class="flex items-end gap-3 pt-8 h-48 opacity-30">
+                <div class="w-16 h-24 rounded-sm" style="border:1px solid #94a3b8;"></div>
+                <div class="w-16 h-44 rounded-sm" style="border:1px solid #94a3b8;"></div>
+                <div class="w-16 h-36 rounded-sm" style="border:1px solid #94a3b8;"></div>
             </div>
         </div>
 
+        <!-- ── Right login card ── -->
         <div class="flex justify-center md:justify-end">
-            <div class="w-full max-w-md p-8 bg-[#14161d] rounded-2xl border border-gray-800/60 shadow-2xl">
-                <div class="mb-6">
-                    <h2 class="text-3xl font-bold text-white">Log in</h2>
-                    <p class="text-sm text-gray-400 mt-1">Passwordless Verification</p>
+            <div class="w-full max-w-md p-8 rounded-2xl shadow-lg" style="background:#ffffff; border:1px solid #e2e8f0;">
+                <div class="mb-7">
+                    <h2 class="text-3xl font-bold" style="color:#1e293b;">Log in</h2>
+                    <p class="text-sm mt-1" style="color:#64748b;">Passwordless Verification</p>
                 </div>
 
-                <div id="errorMessageBanner" class="hidden mb-5 p-3 rounded-xl bg-[#2c1616] border border-[#522323] text-[#fca5a5] text-sm text-center">
+                <!-- Error Banner -->
+                <div id="errorMessageBanner" class="hidden mb-5 p-3 rounded-xl text-sm text-center"
+                     style="background:#fef2f2; border:1px solid #fecaca; color:#dc2626;">
                     <span id="errorText">Network error while sending OTP.</span>
                 </div>
 
+                <!-- Step 1: Mobile Input -->
                 <div id="stateMobile" class="space-y-5">
                     <div class="flex gap-3">
+                        <!-- Country Code -->
                         <div class="relative">
-                            <select id="countryCode" class="appearance-none block w-24 h-14 rounded-xl border border-gray-700 bg-[#1c1e24] px-4 text-white text-sm font-medium focus:outline-none focus:border-[#00AEEF] focus:ring-1 focus:ring-[#00AEEF] transition duration-150 cursor-pointer">
+                            <select id="countryCode"
+                                    class="appearance-none block w-24 h-14 rounded-xl px-4 text-sm font-medium focus:outline-none transition duration-150 cursor-pointer"
+                                    style="background:#f1f5f9; border:1px solid #e2e8f0; color:#1e293b;">
                                 <option value="+91" selected>IN +91</option>
                                 <option value="+1">US +1</option>
                                 <option value="+44">UK +44</option>
                             </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center" style="color:#94a3b8;">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                                </svg>
                             </div>
                         </div>
-                        
+
+                        <!-- Phone -->
                         <div class="relative flex-1">
-                            <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                            <span class="absolute inset-y-0 left-4 flex items-center" style="color:#94a3b8;">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                </svg>
                             </span>
-                            <input type="tel" id="mobileNumber" placeholder="**********" 
-                                   class="block w-full h-14 pl-12 pr-4 rounded-xl border border-transparent bg-[#eef3f8] text-slate-900 font-medium placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#00AEEF] transition duration-150"
+                            <input type="tel" id="mobileNumber" placeholder="**********"
+                                   class="block w-full h-14 pl-12 pr-4 rounded-xl font-medium transition duration-150"
+                                   style="background:#f1f5f9; border:1px solid #e2e8f0; color:#1e293b;"
+                                   onfocus="this.style.background='#ffffff'; this.style.borderColor='#00AEEF'; this.style.boxShadow='0 0 0 3px rgba(0,174,239,0.12)';"
+                                   onblur="this.style.background='#f1f5f9'; this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
                                    maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
                     </div>
 
-                    <button type="button" onclick="sendOtpRequest()" 
-                            class="w-full h-14 bg-[#00AEEF] hover:bg-[#009bd4] active:scale-[0.99] text-slate-900 font-bold text-base rounded-xl transition duration-150 tracking-wide shadow-lg shadow-[#00AEEF]/10">
+                    <button type="button" onclick="sendOtpRequest()"
+                            class="w-full h-14 font-bold text-base rounded-xl transition duration-150 tracking-wide"
+                            style="background:#00AEEF; color:#ffffff; box-shadow:0 4px 16px rgba(0,174,239,0.2);"
+                            onmouseover="this.style.background='#0099d4';" onmouseout="this.style.background='#00AEEF';">
                         Send OTP via Mobile
                     </button>
                 </div>
 
+                <!-- Step 2: OTP Input -->
                 <div id="stateOtp" class="space-y-5 hidden">
                     <div class="space-y-2">
-                        <input type="text" id="otpCode" placeholder="••••••" 
-                               class="block w-full h-14 tracking-[0.75em] text-center text-2xl font-bold rounded-xl border border-gray-700 bg-[#1c1e24] text-white placeholder-gray-600 focus:outline-none focus:border-[#00AEEF] focus:ring-1 focus:ring-[#00AEEF] transition duration-150"
+                        <input type="text" id="otpCode" placeholder="••••••"
+                               class="block w-full h-14 tracking-[0.75em] text-center text-2xl font-bold rounded-xl transition duration-150"
+                               style="background:#f1f5f9; border:1px solid #e2e8f0; color:#1e293b;"
+                               onfocus="this.style.background='#ffffff'; this.style.borderColor='#00AEEF'; this.style.boxShadow='0 0 0 3px rgba(0,174,239,0.12)';"
+                               onblur="this.style.background='#f1f5f9'; this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
                                maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                        <p class="text-xs text-gray-500 text-center">Development Sandbox Token fallback: <span class="text-gray-300 font-mono font-bold">123456</span></p>
+                        <p class="text-xs text-center" style="color:#94a3b8;">
+                            Development Sandbox Token: <span class="font-mono font-bold" style="color:#1e293b;">123456</span>
+                        </p>
                     </div>
 
                     <div class="space-y-3">
-                        <button type="button" onclick="verifyOtpRequest()" 
-                                class="w-full h-14 bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-bold text-base rounded-xl transition duration-150 tracking-wide shadow-lg">
-                            Verify & Proceed
+                        <button type="button" onclick="verifyOtpRequest()"
+                                class="w-full h-14 font-bold text-base rounded-xl transition duration-150 tracking-wide"
+                                style="background:#059669; color:#ffffff; box-shadow:0 4px 16px rgba(5,150,105,0.2);"
+                                onmouseover="this.style.background='#047857';" onmouseout="this.style.background='#059669';">
+                            Verify &amp; Proceed
                         </button>
-                        
-                        <button type="button" onclick="goBackToMobile()" 
-                                class="w-full text-center text-sm font-semibold text-gray-400 hover:text-white transition duration-150 py-1">
+
+                        <button type="button" onclick="goBackToMobile()"
+                                class="w-full text-center text-sm font-semibold py-1 transition duration-150 hover:text-emerald-600"
+                                style="color:#64748b;">
                             Modify Phone Number
                         </button>
                     </div>
@@ -128,18 +167,13 @@
             hideAlert();
             const mobileInput = document.getElementById('mobileNumber').value.trim();
             if (!mobileInput || mobileInput.length < 10) {
-                showAlert('Please match requested format: A valid 10-digit number.');
+                showAlert('Please enter a valid 10-digit number.');
                 return;
             }
-
             const fullMobile = document.getElementById('countryCode').value + mobileInput;
-            
             fetch('/api/auth/send-otp/', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
                 body: JSON.stringify({ phone: fullMobile })
             })
             .then(res => res.json())
@@ -151,10 +185,7 @@
                     showAlert(data.error || 'Failed to dispatch secure OTP verification token.');
                 }
             })
-            .catch(err => {
-                console.error(err);
-                showAlert('Network error while sending OTP.');
-            });
+            .catch(err => { console.error(err); showAlert('Network error while sending OTP.'); });
         }
 
         function verifyOtpRequest() {
@@ -162,18 +193,13 @@
             const otp = document.getElementById('otpCode').value.trim();
             const mobileInput = document.getElementById('mobileNumber').value.trim();
             const fullMobile = document.getElementById('countryCode').value + mobileInput;
-
             if (otp.length !== 6) {
-                showAlert('Verification failure: OTP must contain exactly 6 digits.');
+                showAlert('OTP must contain exactly 6 digits.');
                 return;
             }
-
             fetch('/api/auth/verify-otp/', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
                 body: JSON.stringify({ otp: otp, phone: fullMobile })
             })
             .then(res => res.json())
@@ -181,13 +207,10 @@
                 if (data.success) {
                     window.location.href = data.redirect_url;
                 } else {
-                    showAlert(data.error || "The secure context rejected the provided key.");
+                    showAlert(data.error || 'The secure context rejected the provided key.');
                 }
             })
-            .catch(err => {
-                console.error(err);
-                showAlert('Network verification communication breakdown.');
-            });
+            .catch(err => { console.error(err); showAlert('Network verification communication breakdown.'); });
         }
     </script>
 </body>

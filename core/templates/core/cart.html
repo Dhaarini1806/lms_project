@@ -7,42 +7,30 @@
     <title>Your Shopping Cart - Tradersfy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        darkBg: '#0D0D12',
-                        cardBg: '#16161F',
-                        borderGray: '#242433',
-                        accentGreen: '#10B981'
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { background-color: #0D0D12; color: #E2E8F0; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { background-color: #f8fafc; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0D0D12; }
-        ::-webkit-scrollbar-thumb { background: #242433; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
 <body class="min-h-screen font-sans antialiased">
 
-    <nav class="border-b border-borderGray bg-darkBg/80 backdrop-blur-md px-6 py-4">
+    <!-- ── Nav ── -->
+    <nav class="border-b px-6 py-4 sticky top-0 z-50" style="background:#ffffff; border-color:#e2e8f0;">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-tr from-emerald-500 to-teal-600 p-2 rounded-xl">
+                <div class="bg-emerald-600 p-2 rounded-xl shadow-sm">
                     <i class="fa-solid fa-chart-line text-white text-lg"></i>
                 </div>
-                <span class="text-xl font-bold text-white">Traders<span class="text-emerald-400">fy</span></span>
+                <span class="text-xl font-bold" style="color:#1e293b;">Traders<span class="text-emerald-600">fy</span></span>
             </div>
-            <div class="flex items-center gap-6">
-                <a href="/courses/" class="text-sm font-medium text-gray-400 hover:text-white transition">Back to Catalog</a>
+            <div class="flex items-center gap-5">
+                <a href="/courses/" class="text-sm font-medium transition hover:text-emerald-600" style="color:#64748b;">Back to Catalog</a>
                 {% if user.is_authenticated %}
-                    <span class="text-xs font-mono text-gray-400 bg-cardBg border border-borderGray px-2.5 py-1 rounded-md">
-                        <i class="fa-solid fa-user mr-1.5 text-emerald-400"></i>{{ user.username }}
+                    <span class="text-xs font-mono px-2.5 py-1 rounded-md" style="background:#f1f5f9; border:1px solid #e2e8f0; color:#64748b;">
+                        <i class="fa-solid fa-user mr-1.5 text-emerald-600"></i>{{ user.username }}
                     </span>
                 {% endif %}
             </div>
@@ -50,92 +38,113 @@
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 py-10">
-        <h1 class="text-2xl font-bold text-white mb-8 flex items-center gap-3">
-            <i class="fa-solid fa-shopping-cart text-emerald-400"></i> Review Your Cart
+        <h1 class="text-2xl font-bold mb-8 flex items-center gap-3" style="color:#1e293b;">
+            <i class="fa-solid fa-shopping-cart text-emerald-600"></i> Review Your Cart
         </h1>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
+            <!-- ── Cart Items ── -->
             <div class="lg:col-span-2 space-y-4">
                 {% for item in cart_items %}
-                <div class="bg-cardBg border border-borderGray rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-5 hover:border-borderGray/80 transition">
+                <div class="rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-5 transition"
+                     style="background:#ffffff; border:1px solid #e2e8f0; box-shadow:0 1px 4px rgba(15,23,42,.04);"
+                     onmouseover="this.style.borderColor='#cbd5e1';" onmouseout="this.style.borderColor='#e2e8f0';">
                     <div class="flex items-center gap-5 w-full sm:w-auto">
-                        <div class="w-24 h-16 bg-darkBg rounded-xl flex items-center justify-center border border-borderGray flex-shrink-0 overflow-hidden">
+                        <div class="w-24 h-16 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden"
+                             style="background:#f1f5f9; border:1px solid #e2e8f0;">
                             {% if item.image %}
                                 <img src="{{ item.image.url }}" alt="" class="w-full h-full object-cover">
                             {% else %}
-                                <i class="fa-solid fa-graduation-cap text-gray-600 text-xl"></i>
+                                <i class="fa-solid fa-graduation-cap text-xl" style="color:#cbd5e1;"></i>
                             {% endif %}
                         </div>
                         <div>
-                            <h3 class="font-semibold text-white text-base line-clamp-1">{{ item.title }}</h3>
-                            <p class="text-xs text-gray-400 mt-1 flex items-center gap-2">
-                                <span><i class="fa-solid fa-clock text-gray-500 mr-1"></i> Full Access</span>
-                                <span>•</span>
-                                <span class="text-emerald-400 font-medium">Instant Activation</span>
+                            <h3 class="font-semibold text-base line-clamp-1" style="color:#1e293b;">{{ item.title }}</h3>
+                            <p class="text-xs mt-1 flex items-center gap-2" style="color:#94a3b8;">
+                                <span><i class="fa-solid fa-clock mr-1" style="color:#94a3b8;"></i> Full Access</span>
+                                <span>&bull;</span>
+                                <span class="font-medium text-emerald-600">Instant Activation</span>
                             </p>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-borderGray/50">
-                        <span class="text-lg font-bold text-white">₹{{ item.price }}</span>
-                        <a href="{% url 'remove_from_cart' item.id %}" class="text-gray-500 hover:text-rose-400 transition p-2 text-sm" title="Remove item from workspace">
+                    <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pt-3 sm:pt-0"
+                         style="border-top:1px solid transparent;">
+                        <span class="text-lg font-bold" style="color:#1e293b;">₹{{ item.price }}</span>
+                        <a href="{% url 'remove_from_cart' item.id %}"
+                           class="p-2 text-sm transition rounded-lg"
+                           style="color:#94a3b8;"
+                           onmouseover="this.style.color='#ef4444'; this.style.background='#fef2f2';"
+                           onmouseout="this.style.color='#94a3b8'; this.style.background='transparent';"
+                           title="Remove item">
                             <i class="fa-solid fa-trash-can"></i>
                         </a>
                     </div>
                 </div>
                 {% empty %}
-                <div class="bg-cardBg border border-dashed border-borderGray rounded-2xl p-12 text-center space-y-4">
-                    <div class="w-16 h-16 bg-darkBg rounded-full flex items-center justify-center mx-auto text-gray-500">
-                        <i class="fa-solid fa-bag-shopping text-xl"></i>
+                <div class="rounded-2xl p-12 text-center space-y-4"
+                     style="background:#ffffff; border:2px dashed #e2e8f0;">
+                    <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style="background:#f1f5f9;">
+                        <i class="fa-solid fa-bag-shopping text-xl" style="color:#cbd5e1;"></i>
                     </div>
                     <div>
-                        <h3 class="text-md font-semibold text-white">Your cart is empty</h3>
-                        <p class="text-sm text-gray-400 mt-1">Explore our expert trading catalog to add premium toolkits.</p>
+                        <h3 class="text-md font-semibold" style="color:#1e293b;">Your cart is empty</h3>
+                        <p class="text-sm mt-1" style="color:#94a3b8;">Explore our expert trading catalog to add premium toolkits.</p>
                     </div>
-                    <a href="/courses/" class="inline-block bg-emerald-500 hover:bg-emerald-600 text-black font-semibold text-sm px-5 py-2.5 rounded-xl transition">
+                    <a href="/courses/"
+                       class="inline-block font-semibold text-sm px-5 py-2.5 rounded-xl transition"
+                       style="background:#059669; color:#ffffff;"
+                       onmouseover="this.style.background='#047857';" onmouseout="this.style.background='#059669';">
                         Browse Courses
                     </a>
                 </div>
                 {% endfor %}
             </div>
 
+            <!-- ── Order Summary ── -->
             <div class="lg:col-span-1">
-                <div class="bg-cardBg border border-borderGray rounded-2xl p-6 space-y-6 sticky top-6 shadow-xl">
-                    <h2 class="text-md font-semibold text-white tracking-wide border-b border-borderGray pb-4">
+                <div class="rounded-2xl p-6 space-y-6 sticky top-6"
+                     style="background:#ffffff; border:1px solid #e2e8f0; box-shadow:0 4px 16px rgba(15,23,42,.07);">
+                    <h2 class="text-md font-semibold tracking-wide pb-4" style="color:#1e293b; border-bottom:1px solid #e2e8f0;">
                         Order Summary
                     </h2>
 
                     <div class="space-y-3.5 text-sm">
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Subtotal</span>
-                            <span class="text-gray-200 font-medium">₹{{ subtotal }}</span>
+                            <span style="color:#64748b;">Subtotal</span>
+                            <span class="font-medium" style="color:#1e293b;">₹{{ subtotal }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Estimated GST (18%)</span>
-                            <span class="text-gray-200 font-medium">₹{{ gst_estimate }}</span>
+                            <span style="color:#64748b;">Estimated GST (18%)</span>
+                            <span class="font-medium" style="color:#1e293b;">₹{{ gst_estimate }}</span>
                         </div>
-                        <div class="border-t border-borderGray/50 my-2 pt-3 flex justify-between items-baseline">
-                            <span class="text-base font-medium text-white">Grand Total</span>
-                            <span class="text-2xl font-black text-emerald-400">₹{{ grand_total }}</span>
+                        <div class="pt-3 flex justify-between items-baseline" style="border-top:1px solid #e2e8f0;">
+                            <span class="text-base font-medium" style="color:#1e293b;">Grand Total</span>
+                            <span class="text-2xl font-black text-emerald-600">₹{{ grand_total }}</span>
                         </div>
                     </div>
 
                     {% if cart_items %}
                         <form method="POST" action="{% url 'checkout' %}">
                             {% csrf_token %}
-                            <button type="submit" class="w-full block text-center bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-bold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-500/10 hover:brightness-110 active:scale-[0.99] transition duration-150 cursor-pointer">
+                            <button type="submit"
+                                    class="w-full block text-center font-bold text-sm py-3.5 px-4 rounded-xl transition duration-150 cursor-pointer"
+                                    style="background:linear-gradient(135deg,#059669,#047857); color:#ffffff; box-shadow:0 4px 16px rgba(5,150,105,0.2);"
+                                    onmouseover="this.style.filter='brightness(1.08)';" onmouseout="this.style.filter='none';">
                                 Proceed to Checkout <i class="fa-solid fa-arrow-right ml-1.5"></i>
                             </button>
                         </form>
                     {% else %}
-                        <button disabled class="w-full bg-borderGray text-gray-500 font-semibold text-sm py-3.5 px-4 rounded-xl cursor-not-allowed">
+                        <button disabled
+                                class="w-full font-semibold text-sm py-3.5 px-4 rounded-xl cursor-not-allowed"
+                                style="background:#f1f5f9; color:#94a3b8; border:1px solid #e2e8f0;">
                             Checkout Disabled
                         </button>
                     {% endif %}
 
-                    <div class="flex items-center justify-center gap-2 text-[11px] text-gray-500 pt-2">
-                        <i class="fa-solid fa-lock text-emerald-500/60"></i> Secure Payments powered by Razorpay
+                    <div class="flex items-center justify-center gap-2 text-[11px] pt-1" style="color:#94a3b8;">
+                        <i class="fa-solid fa-lock text-emerald-500"></i> Secure Payments powered by Razorpay
                     </div>
                 </div>
             </div>

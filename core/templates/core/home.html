@@ -3,295 +3,401 @@
 {% block extra_css %}
 <style>
     @keyframes scroll-up {
-        0% { transform: translateY(0); }
+        0%   { transform: translateY(0); }
         100% { transform: translateY(-50%); }
     }
     @keyframes scroll-left {
-        0% { transform: translateX(0); }
+        0%   { transform: translateX(0); }
         100% { transform: translateX(-50%); }
     }
-    .scroll-container {
-        height: 600px;
-        overflow: hidden;
-        position: relative;
-    }
+    .scroll-container { height: 600px; overflow: hidden; position: relative; }
     .scroll-track {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+        display: flex; flex-direction: column; gap: 1rem;
         animation: scroll-up 20s linear infinite;
     }
-    .scroll-track:hover {
-        animation-play-state: paused;
-    }
+    .scroll-track:hover { animation-play-state: paused; }
     .testimonial-track {
-        display: flex;
-        gap: 2rem;
+        display: flex; gap: 2rem;
         animation: scroll-left 30s linear infinite;
         width: max-content;
     }
-    .testimonial-track.no-scroll {
-        animation: none;
-        width: auto;
+    .testimonial-track.no-scroll { animation: none; width: auto; }
+    .testimonial-track:hover { animation-play-state: paused; }
+    .hero-glow {
+        position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
+        width: 80%; height: 50%;
+        background: radial-gradient(circle, rgba(5,150,105,0.06) 0%, transparent 70%);
+        z-index: 0; pointer-events: none;
     }
-    .testimonial-track:hover {
-        animation-play-state: paused;
+    /* Core Values icon box */
+    .value-icon {
+        width: 52px; height: 52px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: 18px; font-size: 22px;
     }
-    .hero-glow { position: absolute; top: -10%; left: 50%; transform: translateX(-50%); width: 80%; height: 50%; background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%); z-index: -1; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="hero-glow"></div>
-<div class="min-h-screen selection:bg-emerald-500/30">
+<div style="background-color:#f8fafc;">
 
+    <!-- ── Welcome Banner ── -->
     {% if user.is_authenticated %}
-    <!-- Personalized welcome banner for logged-in users -->
-    <div class="bg-gradient-to-r from-[#00C5FF] to-[#0072FF] text-black font-bold px-6 py-4 text-center text-sm tracking-wide shadow-lg flex items-center justify-center space-x-2 animate-fade-in">
+    <div class="text-white font-semibold px-6 py-3 text-center text-sm tracking-wide flex items-center justify-center gap-2"
+         style="background:linear-gradient(90deg,#00AEEF,#0072b3);">
         <i class="fa-solid fa-user-circle"></i>
         <span>Welcome back, {{ user.username }}! You have access to your dashboard and quick links.</span>
     </div>
     {% else %}
         {% if welcome_banner %}
-        <div class="bg-gradient-to-r from-[#00C5FF] to-[#0072FF] text-black font-bold px-6 py-3 text-center text-sm tracking-wide shadow-lg flex items-center justify-center space-x-2 animate-fade-in">
+        <div class="text-white font-semibold px-6 py-3 text-center text-sm tracking-wide flex items-center justify-center gap-2"
+             style="background:linear-gradient(90deg,#00AEEF,#0072b3);">
             <i class="fa-solid fa-wand-magic-sparkles"></i>
-            <span>Welcome to Tradersfy! Your account was initialized successfully. Complete your student profile setup below.</span>
+            <span>Welcome to Tradersfy! Your account was initialized successfully.</span>
         </div>
         {% endif %}
     {% endif %}
 
-    <header class="w-full flex items-center justify-between px-6 md:px-16 py-5 glass sticky top-0 z-50">
-        <div class="flex items-center space-x-12">
-            <div class="text-xl font-bold tracking-wider text-white flex items-center">
-                <div class="bg-emerald-500 p-2 rounded-lg mr-3 shadow-lg shadow-emerald-500/20">
-                    <i class="fa-solid fa-chart-line text-white text-xs"></i>
-                </div>
-                Traders<span class="text-emerald-400">fy</span>
-            </div>
-            <nav class="hidden lg:flex space-x-8 text-gray-400 text-sm font-medium">
-                <a href="{% url 'course_catalog' %}" class="hover:text-white transition">Courses</a>
-                <a href="#testimonials" class="hover:text-white transition">Testimonials</a>
-                <a href="#values" class="hover:text-white transition">Core Values</a>
-            </nav>
-        </div>
-        <div class="flex items-center space-x-6">
-            {% if user.is_authenticated %}
-                <span class="text-xs bg-[#222222] border border-gray-800 text-gray-400 px-3 py-1.5 rounded-lg font-mono"><i class="fa-solid fa-circle text-green-500 mr-1.5 text-[9px]"></i>Active</span>
-                <a href="{% url 'logout' %}" class="text-sm text-gray-400 hover:text-white transition">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="bg-[#00C5FF] text-black font-semibold px-5 py-2 rounded-lg text-sm hover:bg-[#00A3D4] transition">Sign In</a>
-            {% endif %}
-        </div>
-    </header>
-
+    <!-- ── Authenticated Quick-Access Cards ── -->
     {% if user.is_authenticated %}
-    <section class="max-w-7xl mx-auto px-6 md:px-12 pt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Quick‑access cards -->
-        <a href="{% url 'admin_dashboard' %}" class="glass p-6 rounded-2xl hover:border-emerald-500/30 transition flex flex-col items-center text-center group">
-            <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3 group-hover:bg-emerald-500/20 transition">
-                <i class="fa-solid fa-chart-line text-xl text-emerald-500"></i>
+    <section class="max-w-7xl mx-auto px-6 md:px-12 pt-8 grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <a href="{% url 'admin_dashboard' %}" class="glass p-6 rounded-2xl hover:border-emerald-300 transition flex flex-col items-center text-center group">
+            <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mb-3 group-hover:bg-emerald-100 transition">
+                <i class="fa-solid fa-chart-line text-xl text-emerald-600"></i>
             </div>
-            <span class="font-semibold text-gray-200">Admin Dashboard</span>
+            <span class="font-semibold" style="color:#1e293b;">Admin Dashboard</span>
         </a>
-        <a href="{% url 'course_catalog' %}" class="glass p-6 rounded-2xl hover:border-emerald-500/30 transition flex flex-col items-center text-center group">
-            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-3 group-hover:bg-blue-500/20 transition">
-                <i class="fa-solid fa-book-open text-xl text-blue-500"></i>
+        <a href="{% url 'course_catalog' %}" class="glass p-6 rounded-2xl hover:border-blue-300 transition flex flex-col items-center text-center group">
+            <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-3 group-hover:bg-blue-100 transition">
+                <i class="fa-solid fa-book-open text-xl text-blue-600"></i>
             </div>
-            <span class="font-semibold text-gray-200">Browse Courses</span>
+            <span class="font-semibold" style="color:#1e293b;">Browse Courses</span>
         </a>
-        <a href="{% url 'profile' %}" class="glass p-6 rounded-2xl hover:border-emerald-500/30 transition flex flex-col items-center text-center group">
-            <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center mb-3 group-hover:bg-purple-500/20 transition">
-                <i class="fa-solid fa-user text-xl text-purple-500"></i>
+        <a href="{% url 'profile' %}" class="glass p-6 rounded-2xl hover:border-purple-300 transition flex flex-col items-center text-center group">
+            <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center mb-3 group-hover:bg-purple-100 transition">
+                <i class="fa-solid fa-user text-xl text-purple-600"></i>
             </div>
-            <span class="font-semibold text-gray-200">My Profile</span>
+            <span class="font-semibold" style="color:#1e293b;">My Profile</span>
         </a>
     </section>
     {% endif %}
 
-    <section class="max-w-7xl mx-auto px-6 md:px-12 pt-12 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <!-- ── Hero ── -->
+    <section class="max-w-7xl mx-auto px-6 md:px-12 pt-12 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
         <div class="lg:col-span-7 space-y-6">
-            <span class="inline-flex items-center bg-[#161616] border border-gray-800 text-gray-400 px-3 py-1 rounded-full text-xs font-medium">
-                <i class="fa-solid fa-graduation-cap text-[#00C5FF] mr-2"></i> Course/Membership Template
+            <span class="inline-flex items-center border rounded-full px-3 py-1 text-xs font-medium"
+                  style="background:#f1f5f9; border-color:#e2e8f0; color:#64748b;">
+                <i class="fa-solid fa-graduation-cap mr-2" style="color:#00AEEF;"></i> Course / Membership Template
             </span>
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight" style="color:#1e293b;">
                 Unlock Your Potential.<br><span class="gradient-text">Expand Your Skills.</span>
             </h1>
-            <p class="text-gray-400 text-base md:text-lg max-w-xl leading-relaxed">
+            <p class="text-base md:text-lg max-w-xl leading-relaxed" style="color:#64748b;">
                 Create Beautiful Membership Sites to Sell your Courses or any other products using the Custom Template designed seamlessly for instant learning interactions.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 pt-2">
-                <a href="{% url 'course_catalog' %}" class="inline-flex items-center justify-center btn-primary text-black font-bold px-8 py-4 rounded-xl text-sm">
+                <a href="{% url 'course_catalog' %}" class="btn-primary font-bold px-8 py-4 rounded-xl text-sm shadow-lg">
                     Explore Our Courses <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                </a>
+                <a href="#values"
+                   class="inline-flex items-center justify-center font-bold px-8 py-4 rounded-xl text-sm transition"
+                   style="background:#f1f5f9; color:#1e293b; border:1px solid #e2e8f0;"
+                   onmouseover="this.style.background='#e2e8f0';" onmouseout="this.style.background='#f1f5f9';">
+                    Our Values <i class="fa-solid fa-arrow-down ml-2 text-xs"></i>
                 </a>
             </div>
         </div>
-
         <div class="lg:col-span-5 grid grid-cols-2 gap-4 h-[600px] overflow-hidden">
-            <!-- Left Column -->
             <div class="scroll-container">
                 <div class="scroll-track">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" alt="Workspace">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" alt="Collab">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80" alt="Students">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80" alt="Screen">
-                    <!-- Duplicate for infinite effect -->
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" alt="Workspace">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" alt="Collab">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80" alt="Students">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80" alt="Screen">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" alt="Workspace">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" alt="Collab">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80" alt="Students">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80" alt="Screen">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" alt="Workspace">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" alt="Collab">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80" alt="Students">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80" alt="Screen">
                 </div>
             </div>
-            <!-- Right Column (Delayed) -->
             <div class="scroll-container">
-                <div class="scroll-track" style="animation-delay: -10s;">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80" alt="Students">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80" alt="Screen">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" alt="Workspace">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" alt="Collab">
-                    <!-- Duplicate for infinite effect -->
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80" alt="Students">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80" alt="Screen">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" alt="Workspace">
-                    <img class="rounded-2xl h-64 w-full object-cover shadow-2xl border border-gray-800" src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" alt="Collab">
+                <div class="scroll-track" style="animation-delay:-10s;">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80" alt="Students">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80" alt="Screen">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" alt="Workspace">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" alt="Collab">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80" alt="Students">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80" alt="Screen">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" alt="Workspace">
+                    <img class="rounded-2xl h-64 w-full object-cover shadow-lg border" style="border-color:#e2e8f0;" src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" alt="Collab">
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="courses" class="bg-[#111111] py-24 border-y border-gray-900">
+    <!-- ── Featured Courses ── -->
+    <section id="courses" class="section-alt py-24">
         <div class="max-w-7xl mx-auto px-6 md:px-12">
-            <div class="text-center space-y-2 mb-16">
-                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Featured Courses</h2>
-                <p class="text-gray-500 max-w-md mx-auto text-sm">Accelerate your baseline knowledge across media and logic paths</p>
+            <div class="text-center space-y-2 mb-14">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl" style="color:#1e293b;">Featured Courses</h2>
+                <p class="max-w-md mx-auto text-sm" style="color:#64748b;">Accelerate your baseline knowledge across media and logic paths</p>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {% for course in featured_courses %}
-                <div class="bg-[#161616] border border-gray-800/80 rounded-2xl overflow-hidden group hover:border-[#00C5FF]/50 transition duration-300 flex flex-col justify-between shadow-xl">
+                <div class="glass rounded-2xl overflow-hidden group hover:border-emerald-300 transition duration-300 flex flex-col justify-between" style="border-color:#e2e8f0;">
                     <div>
-                        <div class="relative overflow-hidden h-48 bg-gray-900">
+                        <div class="relative overflow-hidden h-48" style="background:#f1f5f9;">
                             {% if course.thumbnail %}
-                                <img class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500" src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+                                <img class="w-full h-full object-cover group-hover:scale-105 transition duration-500" src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
                             {% else %}
-                                <img class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500" src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=400&q=80" alt="Fallback Cover">
+                                <img class="w-full h-full object-cover group-hover:scale-105 transition duration-500" src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=400&q=80" alt="Cover">
                             {% endif %}
-                            <span class="absolute top-4 left-4 bg-black/70 backdrop-blur-md px-2.5 py-1 text-[10px] uppercase tracking-wider font-bold rounded-md text-gray-300">
+                            <span class="absolute top-4 left-4 backdrop-blur-md px-2.5 py-1 text-[10px] uppercase tracking-wider font-bold rounded-md"
+                                  style="background:rgba(255,255,255,0.85); color:#1e293b;">
                                 {{ course.category|default:"Trading Engine" }}
                             </span>
                         </div>
-                        <div class="p-6 space-y-4">
-                            <h3 class="text-lg font-bold group-hover:text-[#00C5FF] transition line-clamp-1">{{ course.title }}</h3>
+                        <div class="p-6 space-y-3">
+                            <h3 class="text-lg font-bold group-hover:text-emerald-600 transition line-clamp-1" style="color:#1e293b;">{{ course.title }}</h3>
                         </div>
                     </div>
-                    <div class="px-6 pb-6 pt-2 border-t border-gray-900 flex items-center justify-between text-xs text-gray-500">
-                        <div class="flex items-center space-x-3">
-                            <span><i class="fa-regular fa-clock mr-1 text-[#00C5FF]"></i> {{ course.duration|default:"Full Access" }}</span>
-                        </div>
-                        <a href="{% url 'course_detail' course.slug %}" class="bg-[#222222] hover:bg-[#00C5FF] text-gray-300 hover:text-black font-semibold px-3 py-1.5 rounded-md transition text-[11px]">
+                    <div class="px-6 pb-6 pt-2 flex items-center justify-between text-xs" style="border-top:1px solid #e2e8f0; color:#64748b;">
+                        <span><i class="fa-regular fa-clock mr-1" style="color:#00AEEF;"></i> {{ course.duration|default:"Full Access" }}</span>
+                        <a href="{% url 'course_detail' course.slug %}"
+                           class="font-semibold px-3 py-1.5 rounded-md transition text-[11px]"
+                           style="background:#f1f5f9; color:#1e293b; border:1px solid #e2e8f0;"
+                           onmouseover="this.style.background='#00AEEF'; this.style.borderColor='#00AEEF'; this.style.color='#fff';"
+                           onmouseout="this.style.background='#f1f5f9'; this.style.borderColor='#e2e8f0'; this.style.color='#1e293b';">
                             View Course
                         </a>
                     </div>
                 </div>
                 {% empty %}
-                <div class="col-span-full text-center py-12 text-gray-500 text-sm">
-                    No featured tracks initialized yet.
-                </div>
+                <div class="col-span-full text-center py-12 text-sm" style="color:#94a3b8;">No featured tracks initialized yet.</div>
                 {% endfor %}
             </div>
         </div>
     </section>
 
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="py-24 bg-[#0A0A0A] overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6 md:px-12 mb-16">
+    <!-- ── Testimonials ── -->
+    <section id="testimonials" class="py-24 overflow-hidden" style="background:#f8fafc;">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 mb-14">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-3xl font-black text-white">Testimonials</h2>
-                    <p class="text-gray-500 mt-2">Hear from our community of successful traders.</p>
-                </div>
-                <div class="hidden md:flex gap-2">
-                    <div class="w-12 h-12 rounded-full border border-white/5 flex items-center justify-center text-gray-600">
-                        <i class="fa-solid fa-quote-right text-xl"></i>
-                    </div>
+                    <h2 class="text-3xl font-black" style="color:#1e293b;">Testimonials</h2>
+                    <p class="mt-2" style="color:#64748b;">Hear from our community of successful traders.</p>
                 </div>
             </div>
         </div>
-
         <div class="relative">
             <div class="testimonial-track px-6 md:px-12 {% if testimonials|length <= 1 %}no-scroll justify-center mx-auto{% endif %}">
                 {% if testimonials|length > 1 %}
-                    {% for i in "12" %} <!-- Duplicate for infinite effect -->
-                    {% for testimonial in testimonials %}
-                    <div class="w-[350px] md:w-[450px] glass p-8 rounded-[2.5rem] border border-white/5 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-500 group">
+                    {% for i in "12" %}{% for testimonial in testimonials %}
+                    <div class="w-[350px] md:w-[420px] glass p-7 rounded-[2rem] flex flex-col justify-between hover:border-emerald-300 transition-all duration-500 group" style="border-color:#e2e8f0; flex-shrink:0;">
                         <div>
-                            <div class="flex items-center gap-4 mb-8">
-                                <div class="w-14 h-14 rounded-2xl overflow-hidden bg-zinc-900 border border-white/10">
-                                    {% if testimonial.image %}
-                                        <img src="{{ testimonial.image.url }}" class="w-full h-full object-cover">
-                                    {% else %}
-                                        <div class="w-full h-full flex items-center justify-center text-gray-700">
-                                            <i class="fa-solid fa-user text-xl"></i>
-                                        </div>
-                                    {% endif %}
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-2xl overflow-hidden border" style="background:#f1f5f9; border-color:#e2e8f0;">
+                                    {% if testimonial.image %}<img src="{{ testimonial.image.url }}" class="w-full h-full object-cover">
+                                    {% else %}<div class="w-full h-full flex items-center justify-center" style="color:#94a3b8;"><i class="fa-solid fa-user text-lg"></i></div>{% endif %}
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-white group-hover:text-emerald-400 transition">{{ testimonial.name }}</h4>
-                                    <p class="text-xs text-gray-500 font-medium">{{ testimonial.role }}</p>
+                                    <h4 class="font-bold group-hover:text-emerald-600 transition" style="color:#1e293b;">{{ testimonial.name }}</h4>
+                                    <p class="text-xs font-medium" style="color:#64748b;">{{ testimonial.role }}</p>
                                 </div>
                             </div>
-                            <p class="text-gray-400 leading-relaxed italic">"{{ testimonial.content }}"</p>
+                            <p class="leading-relaxed italic text-sm" style="color:#475569;">"{{ testimonial.content }}"</p>
                         </div>
-                        <div class="mt-8 flex gap-1 text-emerald-500/40">
-                            <i class="fa-solid fa-star text-[10px]"></i>
-                            <i class="fa-solid fa-star text-[10px]"></i>
-                            <i class="fa-solid fa-star text-[10px]"></i>
-                            <i class="fa-solid fa-star text-[10px]"></i>
-                            <i class="fa-solid fa-star text-[10px]"></i>
+                        <div class="mt-6 flex gap-1" style="color:#059669;">
+                            {% for s in "12345" %}<i class="fa-solid fa-star text-[10px]"></i>{% endfor %}
                         </div>
                     </div>
-                    {% endfor %}
-                    {% endfor %}
+                    {% endfor %}{% endfor %}
                 {% else %}
                     {% for testimonial in testimonials %}
-                    <div class="w-[350px] md:w-[450px] glass p-8 rounded-[2.5rem] border border-white/5 flex flex-col justify-between hover:border-emerald-500/30 transition-all duration-500 group">
+                    <div class="w-[350px] md:w-[420px] glass p-7 rounded-[2rem] flex flex-col justify-between" style="border-color:#e2e8f0; flex-shrink:0;">
                         <div>
-                            <div class="flex items-center gap-4 mb-8">
-                                <div class="w-14 h-14 rounded-2xl overflow-hidden bg-zinc-900 border border-white/10">
-                                    {% if testimonial.image %}
-                                        <img src="{{ testimonial.image.url }}" class="w-full h-full object-cover">
-                                    {% else %}
-                                        <div class="w-full h-full flex items-center justify-center text-gray-700">
-                                            <i class="fa-solid fa-user text-xl"></i>
-                                        </div>
-                                    {% endif %}
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-2xl overflow-hidden border" style="background:#f1f5f9; border-color:#e2e8f0;">
+                                    {% if testimonial.image %}<img src="{{ testimonial.image.url }}" class="w-full h-full object-cover">
+                                    {% else %}<div class="w-full h-full flex items-center justify-center" style="color:#94a3b8;"><i class="fa-solid fa-user text-lg"></i></div>{% endif %}
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-white group-hover:text-emerald-400 transition">{{ testimonial.name }}</h4>
-                                    <p class="text-xs text-gray-500 font-medium">{{ testimonial.role }}</p>
+                                    <h4 class="font-bold" style="color:#1e293b;">{{ testimonial.name }}</h4>
+                                    <p class="text-xs font-medium" style="color:#64748b;">{{ testimonial.role }}</p>
                                 </div>
                             </div>
-                            <p class="text-gray-400 leading-relaxed italic">"{{ testimonial.content }}"</p>
+                            <p class="leading-relaxed italic text-sm" style="color:#475569;">"{{ testimonial.content }}"</p>
                         </div>
-                        <div class="mt-8 flex gap-1 text-emerald-500/40">
-                            <i class="fa-solid fa-star text-[10px]"></i>
-                            <i class="fa-solid fa-star text-[10px]"></i>
-                            <i class="fa-solid fa-star text-[10px]"></i>
-                            <i class="fa-solid fa-star text-[10px]"></i>
-                            <i class="fa-solid fa-star text-[10px]"></i>
+                        <div class="mt-6 flex gap-1" style="color:#059669;">
+                            {% for s in "12345" %}<i class="fa-solid fa-star text-[10px]"></i>{% endfor %}
                         </div>
                     </div>
                     {% endfor %}
                 {% endif %}
             </div>
-            
-            <!-- Side Gradients for Smooth Fading -->
-            <div class="absolute top-0 left-0 h-full w-32 bg-gradient-to-r from-[#0A0A0A] to-transparent z-10"></div>
-            <div class="absolute top-0 right-0 h-full w-32 bg-gradient-to-l from-[#0A0A0A] to-transparent z-10"></div>
+            <div class="absolute top-0 left-0 h-full w-24 pointer-events-none z-10" style="background:linear-gradient(to right,#f8fafc,transparent);"></div>
+            <div class="absolute top-0 right-0 h-full w-24 pointer-events-none z-10" style="background:linear-gradient(to left,#f8fafc,transparent);"></div>
         </div>
     </section>
 
-    <footer class="w-full text-center py-8 text-gray-700 text-xs border-t border-gray-950 bg-[#0F0F0F]">
-        &copy; 2026 Tradersfy Global Academy Systems. All Rights Reserved.
+    <!-- ── Core Values ── -->
+    <section id="values" class="section-alt py-24">
+        <div class="max-w-7xl mx-auto px-6 md:px-12">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black mb-3" style="color:#1e293b;">
+                    Core <span class="gradient-text">Values</span>
+                </h2>
+                <div class="w-10 h-1 rounded-full mx-auto mb-5" style="background:linear-gradient(90deg,#059669,#00AEEF);"></div>
+                <p class="text-base max-w-xl mx-auto" style="color:#64748b;">
+                    Empowering Learners with Expert Guidance and Practical Skills.<br>Here's What We Offer:
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-7 max-w-4xl mx-auto">
+                <!-- Card 1 -->
+                <div class="glass p-8 rounded-2xl group hover:border-emerald-300 transition-all duration-300">
+                    <div class="value-icon" style="background:rgba(5,150,105,0.08);">
+                        <i class="fa-solid fa-tv" style="color:#059669;"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3" style="color:#1e293b;">Live Courses</h3>
+                    <p class="text-sm leading-relaxed" style="color:#64748b;">
+                        Real-time, interactive courses designed to engage learners directly with expert instructors, creating a dynamic and immersive educational experience.
+                    </p>
+                </div>
+                <!-- Card 2 -->
+                <div class="glass p-8 rounded-2xl group hover:border-emerald-300 transition-all duration-300">
+                    <div class="value-icon" style="background:rgba(0,174,239,0.08);">
+                        <i class="fa-solid fa-language" style="color:#00AEEF;"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3" style="color:#1e293b;">Learn in Tamil</h3>
+                    <p class="text-sm leading-relaxed" style="color:#64748b;">
+                        Dedicated to making quality education accessible to everyone by providing courses in Tamil, empowering learners to excel in their native language.
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="glass p-8 rounded-2xl group hover:border-emerald-300 transition-all duration-300">
+                    <div class="value-icon" style="background:rgba(217,119,6,0.08);">
+                        <i class="fa-solid fa-user-tie" style="color:#d97706;"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3" style="color:#1e293b;">Guidance From Industry Experts</h3>
+                    <p class="text-sm leading-relaxed" style="color:#64748b;">
+                        Every course is led by seasoned industry professionals, bringing real-world experience into the classroom to ensure students receive insights that are both current and relevant.
+                    </p>
+                </div>
+                <!-- Card 4 -->
+                <div class="glass p-8 rounded-2xl group hover:border-emerald-300 transition-all duration-300">
+                    <div class="value-icon" style="background:rgba(139,92,246,0.08);">
+                        <i class="fa-solid fa-flask" style="color:#8b5cf6;"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3" style="color:#1e293b;">Hands-On Practical Learning</h3>
+                    <p class="text-sm leading-relaxed" style="color:#64748b;">
+                        Emphasises practical, hands-on learning experiences, equipping students with the skills they need to succeed in their careers from the very first day.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Footer ── -->
+    <footer id="contact" style="background:#1e293b;">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 pt-16 pb-10">
+
+            <!-- Top grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12" style="border-bottom:1px solid rgba(255,255,255,0.07);">
+
+                <!-- Brand column -->
+                <div class="lg:col-span-1 space-y-5">
+                    <div class="flex items-center gap-2.5">
+                        <div class="bg-emerald-600 w-9 h-9 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-chart-line text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-black text-white">Traders<span class="text-emerald-400">fy</span></span>
+                    </div>
+                    <p class="text-sm leading-relaxed" style="color:#94a3b8;">
+                        Premium trading education designed to empower every learner — from beginner to advanced.
+                    </p>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-9 h-9 rounded-xl flex items-center justify-center transition hover:bg-white/10" style="background:rgba(255,255,255,0.06); color:#94a3b8;" aria-label="Twitter/X">
+                            <i class="fa-brands fa-x-twitter text-sm"></i>
+                        </a>
+                        <a href="#" class="w-9 h-9 rounded-xl flex items-center justify-center transition hover:bg-white/10" style="background:rgba(255,255,255,0.06); color:#94a3b8;" aria-label="Instagram">
+                            <i class="fa-brands fa-instagram text-sm"></i>
+                        </a>
+                        <a href="#" class="w-9 h-9 rounded-xl flex items-center justify-center transition hover:bg-white/10" style="background:rgba(255,255,255,0.06); color:#94a3b8;" aria-label="YouTube">
+                            <i class="fa-brands fa-youtube text-sm"></i>
+                        </a>
+                        <a href="#" class="w-9 h-9 rounded-xl flex items-center justify-center transition hover:bg-white/10" style="background:rgba(255,255,255,0.06); color:#94a3b8;" aria-label="LinkedIn">
+                            <i class="fa-brands fa-linkedin-in text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black uppercase tracking-widest" style="color:#94a3b8;">Quick Links</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="{% url 'course_catalog' %}" class="text-sm transition hover:text-emerald-400" style="color:#cbd5e1;">Courses</a></li>
+                        <li><a href="#testimonials" class="text-sm transition hover:text-emerald-400" style="color:#cbd5e1;">Testimonials</a></li>
+                        <li><a href="#values" class="text-sm transition hover:text-emerald-400" style="color:#cbd5e1;">Core Values</a></li>
+                        <li><a href="{% url 'login' %}" class="text-sm transition hover:text-emerald-400" style="color:#cbd5e1;">Sign In</a></li>
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'profile' %}" class="text-sm transition hover:text-emerald-400" style="color:#cbd5e1;">My Profile</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black uppercase tracking-widest" style="color:#94a3b8;">Legal</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="#" class="text-sm transition hover:text-emerald-400" style="color:#cbd5e1;">Privacy Policy</a></li>
+                        <li><a href="#" class="text-sm transition hover:text-emerald-400" style="color:#cbd5e1;">Terms of Service</a></li>
+                        <li><a href="#" class="text-sm transition hover:text-emerald-400" style="color:#cbd5e1;">Refund Policy</a></li>
+                        <li><a href="#" class="text-sm transition hover:text-emerald-400" style="color:#cbd5e1;">Cookie Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black uppercase tracking-widest" style="color:#94a3b8;">Contact Us</h4>
+                    <ul class="space-y-3.5">
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(5,150,105,0.15);">
+                                <i class="fa-solid fa-envelope text-xs" style="color:#059669;"></i>
+                            </div>
+                            <div>
+                                <div class="text-[10px] font-bold uppercase tracking-wider mb-0.5" style="color:#94a3b8;">Email</div>
+                                <a href="mailto:support@tradersfy.com" class="text-sm transition hover:text-emerald-400" style="color:#cbd5e1;">support@tradersfy.com</a>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(5,150,105,0.15);">
+                                <i class="fa-brands fa-whatsapp text-sm" style="color:#059669;"></i>
+                            </div>
+                            <div>
+                                <div class="text-[10px] font-bold uppercase tracking-wider mb-0.5" style="color:#94a3b8;">WhatsApp</div>
+                                <a href="https://wa.me/917200843784" target="_blank" class="text-sm transition hover:text-emerald-400" style="color:#cbd5e1;">+91 72008 43784</a>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(5,150,105,0.15);">
+                                <i class="fa-solid fa-location-dot text-xs" style="color:#059669;"></i>
+                            </div>
+                            <div>
+                                <div class="text-[10px] font-bold uppercase tracking-wider mb-0.5" style="color:#94a3b8;">Location</div>
+                                <span class="text-sm" style="color:#cbd5e1;">Tamil Nadu, India</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom bar -->
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-xs" style="color:#64748b;">&copy; 2026 Tradersfy Global Academy Systems. All Rights Reserved.</p>
+                <p class="text-xs" style="color:#64748b;">Built with ❤️ for Traders &amp; Learners across India</p>
+            </div>
+        </div>
     </footer>
 
 </div>

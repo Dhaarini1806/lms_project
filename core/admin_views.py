@@ -198,10 +198,12 @@ def admin_dashboard(request):
     
     stats = get_admin_stats()
     recent_orders = Order.objects.select_related('user').order_by('-created_at')[:10]
-    
+    profiles = Profile.objects.select_related('user').all()
+
     context = {
         'stats': stats,
         'recent_orders': recent_orders,
+        'profiles': profiles,
     }
     return render(request, 'core/admin/dashboard.html', context)
 
@@ -395,6 +397,157 @@ def admin_transaction_detail(request, order_id):
         'items': items,
     }
     return render(request, 'core/admin/transaction_detail.html', context)
+
+
+@login_required
+def admin_download_courses_pdf(request):
+    """Download all course details as PDF."""
+    if not is_master_admin(request.user):
+        return redirect('home')
+
+    courses = Course.objects.all()
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CourseTitle', parent=styles['Heading1'],
+        fontSize=22, textColor=colors.HexColor('#1e293b'),
+        spaceAfter=20, alignment=TA_CENTER
+    )
+    elements.append(Paragraph("Course Catalogue Report - Tradersfy", title_style))
+    elements.append(Spacer(1, 0.2 * inch))
+
+    date_style = ParagraphStyle('DateStyle', parent=styles['Normal'], fontSize=10, textColor=colors.grey)
+    elements.append(Paragraph(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", date_style))
+    elements.append(Spacer(1, 0.25 * inch))
+
+    table_data = [['Title', 'Language', 'Level', 'Price (₹)', 'Rating', 'Lessons']]
+    for course in courses:
+        table_data.append([
+            course.title,
+            course.language,
+            course.level,
+            str(course.price),
+            str(course.rating),
+            str(course.lessons.count()),
+        ])
+
+    col_widths = [2.4*inch, 0.9*inch, 1*inch, 0.85*inch, 0.7*inch, 0.7*inch]
+    table = Table(table_data, colWidths=col_widths)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e293b')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('ALIGN', (3, 0), (5, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+        ('TOPPADDING', (0, 0), (-1, 0), 10),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8fafc')]),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('TOPPADDING', (0, 1), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 1), (-1, -1), 8),
+    ]))
+    elements.append(table)
+    elements.append(Spacer(1, 0.4 * inch))
+
+    summary_style = ParagraphStyle('Summary', parent=styles['Normal'], fontSize=10, textColor=colors.HexColor('#1e293b'), spaceAfter=4)
+    elements.append(Paragraph(f"<b>Total Courses:</b> {courses.count()}", summary_style))
+
+    doc.build(elements)
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="courses_report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.pdf"'
+    return response
+
+
+@login_required
+def admin_download_invoice_pdf(request, order_id):
+    """Download a single order's invoice as PDF from the admin panel."""
+    if not is_master_admin(request.user):
+        return redirect('home')
+
+    order = get_object_or_404(Order, id=order_id)
+    items = order.items.all()
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.5*inch, bottomMargin=0.5*inch)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    # Header
+    header_style = ParagraphStyle('InvHeader', parent=styles['Heading1'], fontSize=26, textColor=colors.HexColor('#059669'), spaceAfter=4, alignment=TA_LEFT)
+    elements.append(Paragraph("TRADERSFY", header_style))
+    sub_style = ParagraphStyle('InvSub', parent=styles['Normal'], fontSize=12, textColor=colors.HexColor('#64748b'), spaceAfter=20)
+    elements.append(Paragraph(f"Invoice #{order.order_id}", sub_style))
+    elements.append(Spacer(1, 0.15 * inch))
+
+    # Meta
+    normal = ParagraphStyle('N', parent=styles['Normal'], fontSize=10, textColor=colors.HexColor('#1e293b'), spaceAfter=4)
+    muted  = ParagraphStyle('M', parent=styles['Normal'], fontSize=9,  textColor=colors.HexColor('#64748b'), spaceAfter=2)
+    elements.append(Paragraph(f"<b>Date:</b> {order.created_at.strftime('%d %B %Y')}", normal))
+    elements.append(Paragraph(f"<b>Status:</b> {order.status.upper()}", normal))
+    elements.append(Spacer(1, 0.15 * inch))
+
+    elements.append(Paragraph("BILL TO", ParagraphStyle('SLabel', parent=styles['Normal'], fontSize=9, textColor=colors.HexColor('#059669'), fontName='Helvetica-Bold', spaceBefore=6, spaceAfter=6)))
+    elements.append(Paragraph(f"Customer: {order.user.username}", normal))
+    elements.append(Paragraph(f"Email: {order.user.email}", normal))
+    elements.append(Paragraph(f"State: {order.state_union_territory or '—'}", normal))
+    elements.append(Paragraph(f"Country: {order.country or 'India'}", normal))
+    elements.append(Spacer(1, 0.2 * inch))
+
+    # Items table
+    elements.append(Paragraph("PURCHASED COURSES", ParagraphStyle('SLabel2', parent=styles['Normal'], fontSize=9, textColor=colors.HexColor('#059669'), fontName='Helvetica-Bold', spaceBefore=6, spaceAfter=8)))
+    item_data = [['Course', 'Price (₹)', 'Qty', 'Total (₹)']]
+    for item in items:
+        item_data.append([item.course.title, str(item.price), '1', str(item.price)])
+
+    item_table = Table(item_data, colWidths=[3.5*inch, 1.2*inch, 0.8*inch, 1.2*inch])
+    item_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e293b')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8fafc')]),
+        ('FONTSIZE', (0, 1), (-1, -1), 10),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+    ]))
+    elements.append(item_table)
+    elements.append(Spacer(1, 0.2 * inch))
+
+    # Summary
+    summary_data = [
+        ['Subtotal', f'₹{order.original_price}'],
+        ['GST (18%)', f'₹{order.tax}'],
+        ['TOTAL', f'₹{order.total}'],
+    ]
+    sum_table = Table(summary_data, colWidths=[5*inch, 1.7*inch])
+    sum_table.setStyle(TableStyle([
+        ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('TEXTCOLOR', (0, 0), (-1, 1), colors.HexColor('#64748b')),
+        ('FONTNAME', (0, 2), (-1, 2), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 2), (-1, 2), 12),
+        ('TEXTCOLOR', (0, 2), (-1, 2), colors.HexColor('#059669')),
+        ('LINEABOVE', (0, 2), (-1, 2), 1, colors.HexColor('#e2e8f0')),
+    ]))
+    elements.append(sum_table)
+    elements.append(Spacer(1, 0.4 * inch))
+    elements.append(Paragraph("Thank you for your purchase! Tradersfy — Premium Trading Education Platform", muted))
+
+    doc.build(elements)
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="invoice_{order.order_id}.pdf"'
+    return response
 
 
 @login_required
